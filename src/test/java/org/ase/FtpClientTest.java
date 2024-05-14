@@ -63,7 +63,7 @@ class FtpClientTest {
     }
 
     @Test
-    public void givenLocalFile_whenUploadingIt_thenItExistsOnRemoteLocation() throws URISyntaxException, IOException {
+    public void givenLocalFile_whenUploadingIt_thenItExistsOnRemoteLocation() throws IOException {
         File myFile = new File("myFile.txt");
         boolean created = myFile.createNewFile();
         assertThat(created).isTrue();
