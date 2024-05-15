@@ -7,6 +7,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 @Getter
 public class ConfigReader {
@@ -16,7 +20,7 @@ public class ConfigReader {
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     private String ipAddress;
-    private String folderName;
+    private Path folderPath;
 
     public void read() {
         readWarningForExport();
@@ -26,9 +30,10 @@ public class ConfigReader {
         }
 
         validateDestinationPath();
-        while (folderName == null) {
+        while (folderPath == null) {
             readFolderName();
         }
+        printWarningIfFolderPathNotEmpty();
     }
 
     private void readWarningForExport() {
@@ -57,7 +62,7 @@ public class ConfigReader {
         System.out.println("Enter the folder name of the destination:");
         try {
             String inputString = reader.readLine();
-            folderName = DESTINATION_PATH + inputString;
+            folderPath = Paths.get(DESTINATION_PATH + inputString);
         } catch (IOException e) {
             throw new RuntimeException("Could not read folder name");
         }
@@ -67,6 +72,17 @@ public class ConfigReader {
         boolean exists = new File(DESTINATION_PATH).exists();
         if (!exists) {
             throw new RuntimeException("Destination path does not exist");
+        }
+    }
+
+    private void printWarningIfFolderPathNotEmpty() {
+        try (Stream<Path> stream = Files.list(folderPath)) {
+            boolean hasContent = stream.findAny().isPresent();
+            if (hasContent) {
+                System.out.println("Destination folder is NOT empty!");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error on opening destination folder");
         }
     }
 }
