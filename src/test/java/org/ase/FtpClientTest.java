@@ -12,7 +12,6 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,8 +57,7 @@ class FtpClientTest {
         ftpClient.downloadFile("/foobar.txt", "downloaded_buz.txt");
 
         assertThat(new File("downloaded_buz.txt")).exists();
-        boolean delete = new File("downloaded_buz.txt").delete();// cleanup
-        assertThat(delete).isTrue();
+        new File("downloaded_buz.txt").deleteOnExit();
     }
 
     @Test
@@ -71,5 +69,6 @@ class FtpClientTest {
         ftpClient.putFileToPath(myFile, "/buz.txt");
 
         assertThat(fakeFtpServer.getFileSystem().exists("/buz.txt")).isTrue();
+        myFile.deleteOnExit();
     }
 }
