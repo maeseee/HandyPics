@@ -13,10 +13,14 @@ public class ConfigReader {
 
     private final static String DESTINATION_PATH = "C:\\Users\\maese\\Bilder\\FromHandy\\";
 
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
     private String ipAddress;
     private String folderName;
 
     public void read() {
+        readWarningForExport();
+
         while (ipAddress == null) {
             readFtpServerAddress();
         }
@@ -27,8 +31,16 @@ public class ConfigReader {
         }
     }
 
+    private void readWarningForExport() {
+        System.out.println("Have you copied the favourites pictures to the album \"Best\"?");
+        try {
+            reader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read input to continue");
+        }
+    }
+
     private void readFtpServerAddress() {
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter the IP address of the FTP server:");
         try {
             String inputString = reader.readLine();
@@ -42,7 +54,6 @@ public class ConfigReader {
     }
 
     private void readFolderName() {
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter the folder name of the destination:");
         try {
             String inputString = reader.readLine();
