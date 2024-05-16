@@ -33,6 +33,7 @@ public class ConfigReader {
         while (folderPath == null) {
             readFolderName();
         }
+        createFolderPathIfNotExists();
         printWarningIfFolderPathNotEmpty();
     }
 
@@ -75,6 +76,14 @@ public class ConfigReader {
         }
     }
 
+    private void createFolderPathIfNotExists() {
+        try {
+            Files.createDirectory(folderPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void printWarningIfFolderPathNotEmpty() {
         try (Stream<Path> stream = Files.list(folderPath)) {
             boolean hasContent = stream.findAny().isPresent();
@@ -82,7 +91,7 @@ public class ConfigReader {
                 System.out.println("Destination folder is NOT empty!");
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error on opening destination folder");
+            throw new RuntimeException("Error on opening destination folder " + folderPath.toString());
         }
     }
 }
