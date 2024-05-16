@@ -8,19 +8,19 @@ import java.util.Collection;
 public class FtpAccessor {
 
     private final FtpClient ftpClient;
-    private final Path destinationDir;
+    private final Path destinationPath;
 
-    public FtpAccessor(FtpClient ftpClient, Path destinationDir) {
+    public FtpAccessor(FtpClient ftpClient, Path destinationPath) {
         this.ftpClient = ftpClient;
-        this.destinationDir = destinationDir;
+        this.destinationPath = destinationPath;
     }
 
-    public void copyFilesFrom(Path sourcePath) throws IOException {
+    public void copyFilesFrom(Path sourcePath, String destinationFolder) throws IOException {
         ftpClient.open();
         Collection<String> files = ftpClient.listFiles(sourcePath);
         files.forEach(filename -> {
             try {
-                ftpClient.downloadFile(sourcePath + "/" + filename, destinationDir + "/" + filename);
+                ftpClient.downloadFile(sourcePath + "/" + filename, destinationPath + "/" + destinationFolder + "/" + filename);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -30,7 +30,7 @@ public class FtpAccessor {
 
     public void copyFileFrom(File filePath) throws IOException {
         ftpClient.open();
-        ftpClient.downloadFile(filePath.getPath(), destinationDir + "/" + filePath.getName());
+        ftpClient.downloadFile(filePath.getPath(), destinationPath + "/" + filePath.getName());
         ftpClient.close();
     }
 }
