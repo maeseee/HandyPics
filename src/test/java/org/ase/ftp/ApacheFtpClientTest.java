@@ -1,4 +1,4 @@
-package org.ase;
+package org.ase.ftp;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,15 +12,16 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FtpClientTest {
+class ApacheFtpClientTest {
 
     private FakeFtpServer fakeFtpServer;
 
-    private FtpClient ftpClient;
+    private ApacheFtpClient ftpClient;
 
     @BeforeEach
     public void setup() throws IOException {
@@ -35,7 +36,7 @@ class FtpClientTest {
 
         fakeFtpServer.start();
 
-        ftpClient = new FtpClient("localhost", fakeFtpServer.getServerControlPort(), "user", "password");
+        ftpClient = new ApacheFtpClient("localhost", fakeFtpServer.getServerControlPort(), "user", "password");
         ftpClient.open();
     }
 
@@ -47,7 +48,7 @@ class FtpClientTest {
 
     @Test
     public void givenRemoteFile_whenListingRemoteFiles_thenItIsContainedInList() throws IOException {
-        Collection<String> files = ftpClient.listFiles("");
+        Collection<String> files = ftpClient.listFiles(Paths.get(""));
 
         assertThat(files).contains("foobar.txt");
     }

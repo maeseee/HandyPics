@@ -1,4 +1,4 @@
-package org.ase;
+package org.ase.ftp;
 
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
@@ -7,12 +7,13 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
 import static java.util.stream.Collectors.toList;
 
-class FtpClient {
+class ApacheFtpClient implements FtpClient {
 
     private final String server;
     private final int port;
@@ -20,14 +21,15 @@ class FtpClient {
     private final String password;
     private FTPClient ftp;
 
-    FtpClient(String server, int port, String user, String password) {
+    public ApacheFtpClient(String server, int port, String user, String password) {
         this.server = server;
         this.port = port;
         this.user = user;
         this.password = password;
     }
 
-    void open() throws IOException {
+    @Override
+    public void open() throws IOException {
         ftp = new FTPClient();
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
 
@@ -42,22 +44,26 @@ class FtpClient {
         ftp.setFileType(FTP.BINARY_FILE_TYPE);
     }
 
-    void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         ftp.disconnect();
     }
 
-    Collection<String> listFiles(String path) throws IOException {
-        FTPFile[] files = ftp.listFiles(path);
+    @Override
+    public Collection<String> listFiles(Path path) throws IOException {
+        FTPFile[] files = ftp.listFiles(path.toString());
         return Arrays.stream(files)
                 .map(FTPFile::getName)
                 .collect(toList());
     }
 
-    void putFileToPath(File file, String path) throws IOException {
+    @Override
+    public void putFileToPath(File file, String path) throws IOException {
         ftp.storeFile(path, new FileInputStream(file));
     }
 
-    void downloadFile(String source, String destination) throws IOException {
+    @Override
+    public void downloadFile(String source, String destination) throws IOException {
         OutputStream out = new BufferedOutputStream(new FileOutputStream(destination));
         ftp.retrieveFile(source, out);
         out.close();
