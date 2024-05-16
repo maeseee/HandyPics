@@ -1,5 +1,6 @@
 package org.ase;
 
+import org.ase.ftp.AndroidFtpClient;
 import org.ase.ftp.FtpAccessor;
 
 public class Main {
@@ -7,6 +8,7 @@ public class Main {
         ConfigReader configReader = new ConfigReader();
         configReader.read();
 
-        new FtpAccessor(configReader.getIpAddress(), configReader.getFolderPath());
+        AndroidFtpClient ftpClient = new AndroidFtpClient(configReader.getIpAddress());
+        new FtpAccessor(ftpClient, configReader.getFolderPath());
     }
 }

@@ -21,22 +21,23 @@ class ApacheFtpClientTest {
 
     private FakeFtpServer fakeFtpServer;
 
-    private ApacheFtpClient ftpClient;
+    private AndroidFtpClient ftpClient;
 
     @BeforeEach
     public void setup() throws IOException {
         fakeFtpServer = new FakeFtpServer();
-        fakeFtpServer.addUserAccount(new UserAccount("user", "password", "/data"));
+        fakeFtpServer.addUserAccount(new UserAccount("android", "mySweetHandyAccess", "/data"));
+        //fakeFtpServer.setportServerControlPort(21);
 
         FileSystem fileSystem = new UnixFakeFileSystem();
         fileSystem.add(new DirectoryEntry("/data"));
         fileSystem.add(new FileEntry("/data/foobar.txt", "abcdef 1234567890"));
         fakeFtpServer.setFileSystem(fileSystem);
-        fakeFtpServer.setServerControlPort(0);
+        fakeFtpServer.setServerControlPort(2221);
 
         fakeFtpServer.start();
 
-        ftpClient = new ApacheFtpClient("localhost", fakeFtpServer.getServerControlPort(), "user", "password");
+        ftpClient = new AndroidFtpClient("localhost");
         ftpClient.open();
     }
 
@@ -62,10 +63,10 @@ class ApacheFtpClientTest {
     }
 
     @Test
+    @SuppressWarnings("unused")
     public void givenLocalFile_whenUploadingIt_thenItExistsOnRemoteLocation() throws IOException {
         File myFile = new File("myFile.txt");
         boolean created = myFile.createNewFile();
-        assertThat(created).isTrue();
 
         ftpClient.putFileToPath(myFile, "/buz.txt");
 

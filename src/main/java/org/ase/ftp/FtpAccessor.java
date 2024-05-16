@@ -6,20 +6,15 @@ import java.util.Collection;
 
 public class FtpAccessor {
 
-    private final static int PORT = 2221;
-    private final static String USERNAME = "android";
-    private final static String PASSWORD = "mySweetHandyAccess";
-
-    private final String server;
+    private final FtpClient ftpClient;
     private final Path destinationDir;
 
-    public FtpAccessor(String server, Path destinationDir) {
-        this.server = server;
+    public FtpAccessor(FtpClient ftpClient, Path destinationDir) {
+        this.ftpClient = ftpClient;
         this.destinationDir = destinationDir;
     }
 
     public void copyFiesFrom(Path sourceDir) throws IOException {
-        ApacheFtpClient ftpClient = new ApacheFtpClient(server, PORT, USERNAME, PASSWORD);
         ftpClient.open();
         Collection<String> files = ftpClient.listFiles(sourceDir);
         files.forEach(filename -> {

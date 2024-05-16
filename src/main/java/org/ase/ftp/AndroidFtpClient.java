@@ -13,19 +13,17 @@ import java.util.Collection;
 
 import static java.util.stream.Collectors.toList;
 
-class ApacheFtpClient implements FtpClient {
+public class AndroidFtpClient implements FtpClient {
+
+    private final static int PORT = 2221;
+    private final static String USERNAME = "android";
+    private final static String PASSWORD = "mySweetHandyAccess";
 
     private final String server;
-    private final int port;
-    private final String user;
-    private final String password;
     private FTPClient ftp;
 
-    public ApacheFtpClient(String server, int port, String user, String password) {
+    public AndroidFtpClient(String server) {
         this.server = server;
-        this.port = port;
-        this.user = user;
-        this.password = password;
     }
 
     @Override
@@ -33,14 +31,14 @@ class ApacheFtpClient implements FtpClient {
         ftp = new FTPClient();
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
 
-        ftp.connect(server, port);
+        ftp.connect(server, PORT);
         int reply = ftp.getReplyCode();
         if (!FTPReply.isPositiveCompletion(reply)) {
             ftp.disconnect();
             throw new IOException("Exception in connecting to FTP Server");
         }
 
-        ftp.login(user, password);
+        ftp.login(USERNAME, PASSWORD);
         ftp.setFileType(FTP.BINARY_FILE_TYPE);
     }
 
