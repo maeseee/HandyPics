@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class Main {
 
-    private final static File LAST_BACKUP_TIME_PATH = new File("DCIM/"); // Do not save it on the root of the phone as it automatically gets deleted
+    private final static File LAST_BACKUP_TIME_PATH = new File("DCIM/LastBackup.txt"); // Do not save it on the root of the phone as it automatically gets deleted
 
     public Main() {
         ConfigReader configReader = new ConfigReader();

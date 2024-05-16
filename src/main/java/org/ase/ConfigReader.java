@@ -78,7 +78,7 @@ public class ConfigReader {
 
     private void createFolderPathIfNotExists() {
         try {
-            Files.createDirectory(folderPath);
+            Files.createDirectories(folderPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
