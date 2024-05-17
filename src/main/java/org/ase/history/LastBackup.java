@@ -3,7 +3,6 @@ package org.ase.history;
 import org.ase.ftp.FtpAccessor;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,7 +12,7 @@ import java.time.ZoneOffset;
 
 public class LastBackup {
 
-    private final static File LAST_BACKUP_FILE_PATH = new File("DCIM/LastBackup.txt");
+    private final static Path LAST_BACKUP_FILE_PATH = Path.of("DCIM/LastBackup.txt");
 
     private final Path folderPath;
 
@@ -29,8 +28,8 @@ public class LastBackup {
         }
     }
 
-    public LocalDateTime readTimeFromBackupFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader(folderPath + "\\" + LAST_BACKUP_FILE_PATH.getName()))) {
+    public LocalDateTime readLastBackupTimeFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(folderPath + "/" + LAST_BACKUP_FILE_PATH.getFileName()))) {
             String firstLine = br.readLine();
             if (firstLine != null) {
                 double epochSeconds = Double.parseDouble(firstLine.trim());
@@ -47,7 +46,7 @@ public class LastBackup {
     }
 
     public static void main(String[] args) {
-        LocalDateTime localDateTime = new LastBackup(Paths.get("C:\\Users\\maese\\Bilder\\FromHandy\\test\\")).readTimeFromBackupFile();
+        LocalDateTime localDateTime = new LastBackup(Paths.get("C:\\Users\\maese\\Bilder\\FromHandy\\test\\")).readLastBackupTimeFromFile();
         System.out.println(localDateTime);
 
     }

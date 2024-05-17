@@ -1,6 +1,5 @@
 package org.ase.ftp;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -22,9 +21,9 @@ public class FtpAccessor {
         ftpClient.close();
     }
 
-    public void copyFileFrom(File filePath) throws IOException {
+    public void copyFileFrom(Path filePath) throws IOException {
         ftpClient.open();
-        download(filePath.getPath(), destinationPath + "/" + filePath.getName());
+        download(filePath.toString(), destinationPath + "/" + filePath.getFileName());
         ftpClient.close();
     }
 
