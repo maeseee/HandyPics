@@ -14,6 +14,7 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
@@ -54,10 +55,10 @@ class ApacheFtpClientTest {
     public void shouldHaveContentInItsList_whenListingRemoteFiles() throws IOException {
         Collection<FileProperty> files = ftpClient.listFiles(Paths.get(""));
 
-        List<String> fileNameList = files.stream()
-                .map(FileProperty::fileName)
+        List<Path> filePathList = files.stream()
+                .map(FileProperty::filePath)
                 .collect(toList());
-        assertThat(fileNameList).contains("foobar.txt");
+        assertThat(filePathList).contains(Path.of("foobar.txt"));
     }
 
     @Test

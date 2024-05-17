@@ -59,7 +59,7 @@ public class AndroidFtpClient implements FtpClient {
         FTPFile[] files = ftp.listFiles(path.toString());
         return Arrays.stream(files)
                 .map(ftpFile -> new FileProperty(
-                        ftpFile.getName(),
+                        path.resolve(ftpFile.getName()),
                         ftpFile.getTimestampInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
                 .collect(toList());
     }
