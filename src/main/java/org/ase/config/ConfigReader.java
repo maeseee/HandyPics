@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -69,7 +68,7 @@ public class ConfigReader {
             if (!isValidFolderName(inputString)) {
                 return Optional.empty();
             }
-            return Optional.of(Paths.get(workingPath + "/" + inputString));
+            return Optional.of(workingPath.resolve(inputString));
         } catch (IOException e) {
             throw new RuntimeException("Could not read folder name");
         }

@@ -30,11 +30,11 @@ public class LastBackup {
     }
 
     public LocalDateTime readLastBackupTimeFromFile() {
-        Path lastBackupFilePath = Path.of(folderPath + "/" + LAST_BACKUP_FILE_PATH.getFileName());
-        if(!Files.exists(lastBackupFilePath)) {
+        Path lastBackupFilePath = folderPath.resolve(LAST_BACKUP_FILE_PATH.getFileName());
+        if (!Files.exists(lastBackupFilePath)) {
             return LocalDateTime.of(1970, 1, 1, 0, 0);
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(folderPath + "/" + LAST_BACKUP_FILE_PATH.getFileName()))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(folderPath.resolve(LAST_BACKUP_FILE_PATH.getFileName()).toString()))) {
             String firstLine = br.readLine();
             if (firstLine == null) {
                 throw new RuntimeException("Could not read the backup time file: " + LAST_BACKUP_FILE_PATH.getFileName());

@@ -17,19 +17,19 @@ public class FtpAccessor {
     public void copyFilesFrom(Path sourcePath, String destinationFolder) throws IOException {
         ftpClient.open();
         Collection<String> files = ftpClient.listFiles(sourcePath);
-        files.forEach(filename -> download(sourcePath + "/" + filename, destinationPath + "/" + destinationFolder + "/" + filename));
+        files.forEach(filename -> download(sourcePath.resolve(filename), destinationPath.resolve(destinationFolder).resolve(filename)));
         ftpClient.close();
     }
 
     public void copyFileFrom(Path filePath) throws IOException {
         ftpClient.open();
-        download(filePath.toString(), destinationPath + "/" + filePath.getFileName());
+        download(filePath, destinationPath.resolve(filePath.getFileName()));
         ftpClient.close();
     }
 
-    private void download(String sourcePath, String destinationPath) {
+    private void download(Path sourcePath, Path destinationPath) {
         try {
-            ftpClient.downloadFile(sourcePath, destinationPath);
+            ftpClient.downloadFile(sourcePath.toString(), destinationPath.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
