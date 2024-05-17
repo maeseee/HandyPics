@@ -1,5 +1,6 @@
 package org.ase.ftp;
 
+import org.apache.commons.net.PrintCommandListener;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Collection;
 
@@ -36,7 +38,7 @@ class ApacheFtpClientTest {
 
         fakeFtpServer.start();
 
-        ftpClient = new AndroidFtpClient("localhost");
+        ftpClient = new AndroidFtpClient("localhost", new PrintCommandListener(new PrintWriter(System.out)));
         ftpClient.open();
     }
 
@@ -62,6 +64,7 @@ class ApacheFtpClientTest {
     }
 
     @Test
+    @SuppressWarnings("unused")
     public void shouldHaveFileOnTheServer_whenUploadingIt() throws IOException {
         File myFile = new File("myFile.txt");
         boolean created = myFile.createNewFile();

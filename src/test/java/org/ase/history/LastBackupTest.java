@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class LastBackupTest {
 
     @Test
+    @SuppressWarnings("unused")
     void shouldCreateLastBackupObject_whenLastBackupFileExists() throws IOException {
         Path backupFilePath = Path.of("LastBackup.txt");
         String timeStamp = "1709455921.059432";
@@ -25,7 +26,7 @@ class LastBackupTest {
         assertThat(lastBackupTime)
                 .isBefore(LocalDateTime.of(2024, 3, 3, 10, 0))
                 .isAfter(LocalDateTime.of(2024, 3, 3, 8, 0));
-        backupFilePath.toFile().delete(); // Must be deleted immediately
+        boolean deleted = backupFilePath.toFile().delete();// Must be deleted immediately
     }
 
     @Test
@@ -39,6 +40,7 @@ class LastBackupTest {
     }
 
     @Test
+    @SuppressWarnings("unused")
     void shouldThrow_whenLastBackupObjectIsEmpty() throws IOException {
         Path backupFilePath = Path.of("LastBackup.txt");
         Files.createFile(backupFilePath);
@@ -46,6 +48,6 @@ class LastBackupTest {
 
         assertThrows(RuntimeException.class, testee::readLastBackupTimeFromFile);
 
-        backupFilePath.toFile().delete(); // Must be deleted immediately
+        boolean deleted = backupFilePath.toFile().delete();// Must be deleted immediately
     }
 }

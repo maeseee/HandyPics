@@ -1,5 +1,6 @@
 package org.ase.ftp;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -19,18 +20,23 @@ public class AndroidFtpClient implements FtpClient {
     private final static String USERNAME = "android";
     private final static String PASSWORD = "mySweetHandyAccess";
 
+    private final FTPClient ftp = new FTPClient();
     private final String server;
-    private FTPClient ftp;
 
     public AndroidFtpClient(String server) {
+        this(server, null);
+    }
+
+    @VisibleForTesting
+    AndroidFtpClient(String server, PrintCommandListener printCommandListener) {
         this.server = server;
+        if (printCommandListener != null) {
+            ftp.addProtocolCommandListener(printCommandListener);
+        }
     }
 
     @Override
     public void open() throws IOException {
-        ftp = new FTPClient();
-        ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
-
         ftp.connect(server, PORT);
         int reply = ftp.getReplyCode();
         if (!FTPReply.isPositiveCompletion(reply)) {
