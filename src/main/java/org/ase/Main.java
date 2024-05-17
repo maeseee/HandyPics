@@ -14,10 +14,11 @@ import java.nio.file.Path;
 public class Main {
 
     public static void main(String[] args) {
-        SystemPreparation systemPreparation = new SystemPreparation(new BufferedReader(new InputStreamReader(System.in)));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        SystemPreparation systemPreparation = new SystemPreparation(bufferedReader);
         systemPreparation.showWarningForExport();
         Path workingPath = Path.of("C:/Users/maese/Bilder/FromHandy");
-        ConfigReader configReader = new ConfigReader(workingPath);
+        ConfigReader configReader = new ConfigReader(workingPath, bufferedReader);
         Config config = configReader.read();
         systemPreparation.prepareFolderPath(config.folderPath());
 

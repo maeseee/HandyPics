@@ -3,25 +3,20 @@ package org.ase.config;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-@Getter
+@RequiredArgsConstructor
 public class ConfigReader {
 
-    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private final Path workingPath;
-
-    public ConfigReader(Path workingPath) {
-        this.workingPath = workingPath;
-    }
+    private final BufferedReader reader;
 
     public Config read() {
         validateWorkingPath();
@@ -74,7 +69,7 @@ public class ConfigReader {
             if (!isValidFolderName(inputString)) {
                 return Optional.empty();
             }
-            return Optional.of(Paths.get(workingPath + inputString));
+            return Optional.of(Paths.get(workingPath + "/" + inputString));
         } catch (IOException e) {
             throw new RuntimeException("Could not read folder name");
         }
