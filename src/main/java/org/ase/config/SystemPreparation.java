@@ -9,8 +9,6 @@ import java.util.stream.Stream;
 
 public class SystemPreparation {
 
-    public final static Path DESTINATION_PATH = Path.of("C:/Users/maese/Bilder/FromHandy");
-
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     public void showWarningForExport() {
@@ -23,16 +21,8 @@ public class SystemPreparation {
     }
 
     public void prepareFolderPath(Path folderPath) {
-        validateDestinationPath();
         createFolderPathIfNotExists(folderPath);
         printWarningIfFolderPathNotEmpty(folderPath);
-    }
-
-    private void validateDestinationPath() {
-        boolean exists = Files.exists(DESTINATION_PATH);
-        if (!exists) {
-            throw new RuntimeException("Destination path does not exist");
-        }
     }
 
     private void createFolderPathIfNotExists(Path folderPath) {

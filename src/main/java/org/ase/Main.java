@@ -7,12 +7,15 @@ import org.ase.ftp.AndroidFtpClient;
 import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
 
+import java.nio.file.Path;
+
 public class Main {
 
     public static void main(String[] args) {
         SystemPreparation systemPreparation = new SystemPreparation();
         systemPreparation.showWarningForExport();
-        ConfigReader configReader = new ConfigReader();
+        Path workingPath = Path.of("C:/Users/maese/Bilder/FromHandy");
+        ConfigReader configReader = new ConfigReader(workingPath);
         Config config = configReader.read();
         systemPreparation.prepareFolderPath(config.folderPath());
 
