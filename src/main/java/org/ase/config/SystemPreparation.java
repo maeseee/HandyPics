@@ -1,15 +1,17 @@
 package org.ase.config;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+@RequiredArgsConstructor
 public class SystemPreparation {
 
-    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader reader;
 
     public void showWarningForExport() {
         System.out.println("Have you copied the favourites pictures to the album \"Best\"?");
