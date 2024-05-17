@@ -62,7 +62,6 @@ class ApacheFtpClientTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     public void shouldHaveFileOnTheServer_whenUploadingIt() throws IOException {
         File myFile = new File("myFile.txt");
         boolean created = myFile.createNewFile();
