@@ -2,13 +2,11 @@ package org.ase;
 
 import org.ase.ftp.AndroidFtpClient;
 import org.ase.ftp.FtpAccessor;
+import org.ase.history.LastBackup;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Main {
-
-    private final static File LAST_BACKUP_TIME_PATH = new File("DCIM/LastBackup.txt"); // Do not save it on the root of the phone as it automatically gets deleted
 
     public Main() {
         ConfigReader configReader = new ConfigReader();
@@ -17,12 +15,8 @@ public class Main {
         AndroidFtpClient ftpClient = new AndroidFtpClient(configReader.getIpAddress());
         FtpAccessor ftpAccessor = new FtpAccessor(ftpClient, configReader.getFolderPath());
 
-        try {
-            // TODO retry
-            ftpAccessor.copyFileFrom(LAST_BACKUP_TIME_PATH);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        LastBackup lastBackup = new LastBackup(configReader.getFolderPath());
+        lastBackup.loadLastBackup(ftpAccessor);
     }
 
     public static void main(String[] args) {
