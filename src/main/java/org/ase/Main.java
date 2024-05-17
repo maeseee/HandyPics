@@ -6,10 +6,12 @@ import org.ase.config.SystemPreparation;
 import org.ase.ftp.AndroidFtpClient;
 import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
+import org.ase.picture.TransferPictures;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 
 public class Main {
 
@@ -20,12 +22,16 @@ public class Main {
         Path workingPath = Path.of("C:/Users/maese/Bilder/FromHandy");
         ConfigReader configReader = new ConfigReader(workingPath, bufferedReader);
         Config config = configReader.read();
-        systemPreparation.prepareFolderPath(config.folderPath());
+        systemPreparation.prepareFolderPath(config.destinationWorkPath());
 
         AndroidFtpClient ftpClient = new AndroidFtpClient(config.ipAddress());
-        FtpAccessor ftpAccessor = new FtpAccessor(ftpClient, config.folderPath());
+        FtpAccessor ftpAccessor = new FtpAccessor(ftpClient);
 
-        LastBackup lastBackup = new LastBackup(config.folderPath());
+        LastBackup lastBackup = new LastBackup(config.destinationWorkPath());
         lastBackup.loadLastBackup(ftpAccessor);
+        LocalDateTime lastBackupTime = lastBackup.readLastBackupTimeFromFile();
+
+        TransferPictures transferPictures = new TransferPictures(ftpAccessor, lastBackupTime, config.destinationWorkPath());
+        transferPictures.copy();
     }
 }

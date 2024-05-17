@@ -22,27 +22,27 @@ public class SystemPreparation {
         }
     }
 
-    public void prepareFolderPath(Path folderPath) {
-        createFolderPathIfNotExists(folderPath);
-        printWarningIfFolderPathNotEmpty(folderPath);
+    public void prepareFolderPath(Path destinationWorkPath) {
+        createFolderPathIfNotExists(destinationWorkPath);
+        printWarningIfFolderPathNotEmpty(destinationWorkPath);
     }
 
-    private void createFolderPathIfNotExists(Path folderPath) {
+    private void createFolderPathIfNotExists(Path destinationWorkPath) {
         try {
-            Files.createDirectories(folderPath);
+            Files.createDirectories(destinationWorkPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void printWarningIfFolderPathNotEmpty(Path folderPath) {
-        try (Stream<Path> stream = Files.list(folderPath)) {
+    private void printWarningIfFolderPathNotEmpty(Path destinationWorkPath) {
+        try (Stream<Path> stream = Files.list(destinationWorkPath)) {
             boolean hasContent = stream.findAny().isPresent();
             if (hasContent) {
                 System.out.println("Destination folder is NOT empty!");
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error on opening destination folder " + folderPath);
+            throw new RuntimeException("Error on opening destination folder " + destinationWorkPath);
         }
     }
 }

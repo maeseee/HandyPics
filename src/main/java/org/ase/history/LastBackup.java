@@ -15,26 +15,26 @@ public class LastBackup {
 
     private final static Path LAST_BACKUP_FILE_PATH = Path.of("DCIM/LastBackup.txt");
 
-    private final Path folderPath;
+    private final Path destinationWorkPath;
 
-    public LastBackup(Path folderPath) {
-        this.folderPath = folderPath;
+    public LastBackup(Path destinationWorkPath) {
+        this.destinationWorkPath = destinationWorkPath;
     }
 
     public void loadLastBackup(FtpAccessor ftpAccessor) {
         try {
-            ftpAccessor.copyFileFrom(LAST_BACKUP_FILE_PATH);
+            ftpAccessor.copyFileFrom(LAST_BACKUP_FILE_PATH, destinationWorkPath);
         } catch (IOException e) {
             throw new RuntimeException("Could not read the backup time file: " + e.getMessage());
         }
     }
 
     public LocalDateTime readLastBackupTimeFromFile() {
-        Path lastBackupFilePath = folderPath.resolve(LAST_BACKUP_FILE_PATH.getFileName());
+        Path lastBackupFilePath = destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName());
         if (!Files.exists(lastBackupFilePath)) {
             return LocalDateTime.of(1970, 1, 1, 0, 0);
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(folderPath.resolve(LAST_BACKUP_FILE_PATH.getFileName()).toString()))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName()).toString()))) {
             String firstLine = br.readLine();
             if (firstLine == null) {
                 throw new RuntimeException("Could not read the backup time file: " + LAST_BACKUP_FILE_PATH.getFileName());

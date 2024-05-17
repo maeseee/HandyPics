@@ -1,37 +1,45 @@
 package org.ase.ftp;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
+@RequiredArgsConstructor
 public class FtpAccessor {
 
     private final FtpClient ftpClient;
-    private final Path destinationPath;
 
-    public FtpAccessor(FtpClient ftpClient, Path destinationPath) {
-        this.ftpClient = ftpClient;
-        this.destinationPath = destinationPath;
-    }
-
-    public void copyFilesFrom(Path sourcePath, String destinationFolder) throws IOException {
+    public void copyFilesFrom(Path sourcePath, Path destinationPath, LocalDateTime lastBackupTime) throws IOException {
         ftpClient.open();
-        Collection<String> files = ftpClient.listFiles(sourcePath);
-        files.forEach(filename -> download(sourcePath.resolve(filename), destinationPath.resolve(destinationFolder).resolve(filename)));
-        ftpClient.close();
-    }
+        Collection<FileProperty> files = ftpClient.listFiles(sourcePath);
+        List<String> filteredList = files.stream()
+                .filter(fileProperty -> isModificationDateNewer(lastBackupTime, fileProperty.modificationDate()))
+                // TODO filter image data
+                .map(FileProperty::fileName)
+                .toList();
 
-    public void copyFileFrom(Path filePath) throws IOException {
-        ftpClient.open();
-        download(filePath, destinationPath.resolve(filePath.getFileName()));
-        ftpClient.close();
-    }
-
-    private void download(Path sourcePath, Path destinationPath) {
-        try {
-            ftpClient.downloadFile(sourcePath.toString(), destinationPath.toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        for (String filename : filteredList) {
+            download(sourcePath.resolve(filename), destinationPath.resolve(filename));
         }
+        ftpClient.close();
+    }
+
+    public void copyFileFrom(Path sourcePath, Path destinationPath) throws IOException {
+        ftpClient.open();
+        download(sourcePath, destinationPath);
+        ftpClient.close();
+    }
+
+    private void download(Path sourcePath, Path destinationPath) throws IOException {
+        // TODO retry
+        ftpClient.downloadFile(sourcePath.toString(), destinationPath.toString());
+    }
+
+    private boolean isModificationDateNewer(LocalDateTime lastBackupTime, LocalDateTime modificationDate) {
+        return lastBackupTime.isBefore(modificationDate);
     }
 }

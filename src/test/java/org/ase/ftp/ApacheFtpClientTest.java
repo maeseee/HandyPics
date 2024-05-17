@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ApacheFtpClientTest {
@@ -50,9 +52,12 @@ class ApacheFtpClientTest {
 
     @Test
     public void shouldHaveContentInItsList_whenListingRemoteFiles() throws IOException {
-        Collection<String> files = ftpClient.listFiles(Paths.get(""));
+        Collection<FileProperty> files = ftpClient.listFiles(Paths.get(""));
 
-        assertThat(files).contains("foobar.txt");
+        List<String> fileNameList = files.stream()
+                .map(FileProperty::fileName)
+                .collect(toList());
+        assertThat(fileNameList).contains("foobar.txt");
     }
 
     @Test

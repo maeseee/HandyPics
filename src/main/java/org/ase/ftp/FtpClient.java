@@ -10,7 +10,7 @@ public interface FtpClient {
 
     void close() throws IOException;
 
-    Collection<String> listFiles(Path path) throws IOException;
+    Collection<FileProperty> listFiles(Path path) throws IOException;
 
     void putFileToPath(File file, String path) throws IOException;
 

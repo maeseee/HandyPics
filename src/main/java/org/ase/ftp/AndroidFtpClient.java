@@ -9,6 +9,7 @@ import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -54,10 +55,12 @@ public class AndroidFtpClient implements FtpClient {
     }
 
     @Override
-    public Collection<String> listFiles(Path path) throws IOException {
+    public Collection<FileProperty> listFiles(Path path) throws IOException {
         FTPFile[] files = ftp.listFiles(path.toString());
         return Arrays.stream(files)
-                .map(FTPFile::getName)
+                .map(ftpFile -> new FileProperty(
+                        ftpFile.getName(),
+                        ftpFile.getTimestampInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
                 .collect(toList());
     }
 
