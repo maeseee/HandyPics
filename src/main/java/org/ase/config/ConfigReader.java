@@ -1,5 +1,6 @@
 package org.ase.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import lombok.Getter;
@@ -49,14 +50,18 @@ public class ConfigReader {
         System.out.println("Enter the IP address of the FTP server:");
         try {
             String inputString = reader.readLine();
-            boolean validIpAddress = InetAddresses.isInetAddress(inputString);
-            if (validIpAddress) {
+            if (isValidIpAddress(inputString)) {
                 return Optional.of(inputString);
             }
         } catch (IOException e) {
             throw new RuntimeException("Could not read ip address");
         }
         return Optional.empty();
+    }
+
+    @VisibleForTesting
+    boolean isValidIpAddress(String inputString) {
+        return InetAddresses.isInetAddress(inputString);
     }
 
     private Optional<Path> readFolderName() {
@@ -75,7 +80,8 @@ public class ConfigReader {
         }
     }
 
-    private boolean isValidFolderName(String inputString) {
+    @VisibleForTesting
+    boolean isValidFolderName(String inputString) {
         return inputString.matches("^[A-Za-z][A-Za-z0-9]*$");
     }
 }
