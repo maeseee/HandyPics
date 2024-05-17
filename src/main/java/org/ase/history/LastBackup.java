@@ -5,6 +5,7 @@ import org.ase.ftp.FtpAccessor;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -29,20 +30,22 @@ public class LastBackup {
     }
 
     public LocalDateTime readLastBackupTimeFromFile() {
+        Path lastBackupFilePath = Path.of(folderPath + "/" + LAST_BACKUP_FILE_PATH.getFileName());
+        if(!Files.exists(lastBackupFilePath)) {
+            return LocalDateTime.of(1970, 1, 1, 0, 0);
+        }
         try (BufferedReader br = new BufferedReader(new FileReader(folderPath + "/" + LAST_BACKUP_FILE_PATH.getFileName()))) {
             String firstLine = br.readLine();
-            if (firstLine != null) {
-                double epochSeconds = Double.parseDouble(firstLine.trim());
-                return LocalDateTime.ofEpochSecond((long) epochSeconds, 0, ZoneOffset.UTC);
-            } else {
-                System.err.println("The file is empty.");
+            if (firstLine == null) {
+                throw new RuntimeException("Could not read the backup time file: " + LAST_BACKUP_FILE_PATH.getFileName());
             }
+            double epochSeconds = Double.parseDouble(firstLine.trim());
+            return LocalDateTime.ofEpochSecond((long) epochSeconds, 0, ZoneOffset.UTC);
         } catch (IOException e) {
             throw new RuntimeException("Error reading the file: " + e.getMessage());
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid format in the first line: " + e.getMessage());
         }
-        return null;
     }
 
     public static void main(String[] args) {
