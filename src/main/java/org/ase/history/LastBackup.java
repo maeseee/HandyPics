@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -46,11 +45,5 @@ public class LastBackup {
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid format in the first line: " + e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-        LocalDateTime localDateTime = new LastBackup(Paths.get("C:\\Users\\maese\\Bilder\\FromHandy\\test\\")).readLastBackupTimeFromFile();
-        System.out.println(localDateTime);
-
     }
 }
