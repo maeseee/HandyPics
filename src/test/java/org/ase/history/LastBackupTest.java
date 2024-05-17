@@ -26,7 +26,7 @@ class LastBackupTest {
         assertThat(lastBackupTime)
                 .isBefore(LocalDateTime.of(2024, 3, 3, 10, 0))
                 .isAfter(LocalDateTime.of(2024, 3, 3, 8, 0));
-        boolean deleted = backupFilePath.toFile().delete();// Must be deleted immediately
+        boolean deleted = backupFilePath.toFile().delete(); // Must be deleted immediately
     }
 
     @Test
@@ -48,6 +48,6 @@ class LastBackupTest {
 
         assertThrows(RuntimeException.class, testee::readLastBackupTimeFromFile);
 
-        boolean deleted = backupFilePath.toFile().delete();// Must be deleted immediately
+        boolean deleted = backupFilePath.toFile().delete(); // Must be deleted immediately
     }
 }
