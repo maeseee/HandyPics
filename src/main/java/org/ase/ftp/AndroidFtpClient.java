@@ -58,9 +58,19 @@ public class AndroidFtpClient implements FtpClient {
     public Collection<FileProperty> listFiles(Path path) throws IOException {
         FTPFile[] files = ftp.listFiles(path.toString());
         return Arrays.stream(files)
+                .filter(FTPFile::isFile)
                 .map(ftpFile -> new FileProperty(
                         path.resolve(ftpFile.getName()),
                         ftpFile.getTimestampInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
+                .collect(toList());
+    }
+
+    @Override
+    public Collection<Path> listDirectories(Path path) throws IOException {
+        FTPFile[] files = ftp.listFiles(path.toString());
+        return Arrays.stream(files)
+                .filter(FTPFile::isDirectory)
+                .map(ftpFile -> path.resolve(ftpFile.getName()))
                 .collect(toList());
     }
 

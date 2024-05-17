@@ -35,7 +35,9 @@ class ApacheFtpClientTest {
 
         FileSystem fileSystem = new UnixFakeFileSystem();
         fileSystem.add(new DirectoryEntry("/data"));
-        fileSystem.add(new FileEntry("/data/foobar.txt", "abcdef 1234567890"));
+        fileSystem.add(new FileEntry("/data/foobar.txt", "content"));
+        fileSystem.add(new DirectoryEntry("/data/subFolder"));
+        fileSystem.add(new FileEntry("/data/subFolder/subFoobar.txt", "content 123"));
         fakeFtpServer.setFileSystem(fileSystem);
         fakeFtpServer.setServerControlPort(2221);
 
@@ -52,13 +54,24 @@ class ApacheFtpClientTest {
     }
 
     @Test
-    public void shouldHaveContentInItsList_whenListingRemoteFiles() throws IOException {
+    public void shouldHaveFilesInItsList_whenListingRemoteFiles() throws IOException {
         Collection<FileProperty> files = ftpClient.listFiles(Paths.get(""));
 
         List<Path> filePathList = files.stream()
                 .map(FileProperty::filePath)
                 .collect(toList());
+        assertThat(filePathList).hasSize(1);
         assertThat(filePathList).contains(Path.of("foobar.txt"));
+        assertThat(filePathList).doesNotContain(Path.of("subFolder"));
+    }
+
+    @Test
+    public void shouldHaveDirectoriesInItsList_whenListingRemoteDirs() throws IOException {
+        Collection<Path> files = ftpClient.listDirectories(Paths.get(""));
+
+        assertThat(files).hasSize(1);
+        assertThat(files).doesNotContain(Path.of("foobar.txt"));
+        assertThat(files).contains(Path.of("subFolder"));
     }
 
     @Test
