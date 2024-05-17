@@ -27,7 +27,6 @@ class ApacheFtpClientTest {
     public void setup() throws IOException {
         fakeFtpServer = new FakeFtpServer();
         fakeFtpServer.addUserAccount(new UserAccount("android", "mySweetHandyAccess", "/data"));
-        //fakeFtpServer.setportServerControlPort(21);
 
         FileSystem fileSystem = new UnixFakeFileSystem();
         fileSystem.add(new DirectoryEntry("/data"));
@@ -48,14 +47,14 @@ class ApacheFtpClientTest {
     }
 
     @Test
-    public void givenRemoteFile_whenListingRemoteFiles_thenItIsContainedInList() throws IOException {
+    public void shouldHaveContentInItsList_whenListingRemoteFiles() throws IOException {
         Collection<String> files = ftpClient.listFiles(Paths.get(""));
 
         assertThat(files).contains("foobar.txt");
     }
 
     @Test
-    public void givenRemoteFile_whenDownloading_thenItIsOnTheLocalFilesystem() throws IOException {
+    public void shouldHaveFileOnTheLocalFilesystem_whenDownloading() throws IOException {
         ftpClient.downloadFile("/foobar.txt", "downloaded_buz.txt");
 
         assertThat(new File("downloaded_buz.txt")).exists();
@@ -64,7 +63,7 @@ class ApacheFtpClientTest {
 
     @Test
     @SuppressWarnings("unused")
-    public void givenLocalFile_whenUploadingIt_thenItExistsOnRemoteLocation() throws IOException {
+    public void shouldHaveFileOnTheServer_whenUploadingIt() throws IOException {
         File myFile = new File("myFile.txt");
         boolean created = myFile.createNewFile();
 
