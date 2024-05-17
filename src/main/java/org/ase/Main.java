@@ -6,7 +6,7 @@ import org.ase.history.LastBackup;
 
 public class Main {
 
-    public Main() {
+    public static void main(String[] args) {
         ConfigReader configReader = new ConfigReader();
         configReader.read();
 
@@ -15,9 +15,5 @@ public class Main {
 
         LastBackup lastBackup = new LastBackup(configReader.getFolderPath());
         lastBackup.loadLastBackup(ftpAccessor);
-    }
-
-    public static void main(String[] args) {
-        new Main();
     }
 }
