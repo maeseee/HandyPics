@@ -38,9 +38,10 @@ class FtpAccessorTest {
 
     @ParameterizedTest(name = "{index} => path={0}")
     @CsvSource({
-            "pic.jpg,true",
-            "pic.txt,false",
-            "doc.docx,false"
+            "pic.jpg, true",
+            "pic.txt, false",
+            "doc.docx, false",
+            "jgp.bla, false"
     })
     void shouldFilterFile_whenNotAnImageOrVideo(Path path, boolean imageOrVideo) {
         FtpAccessor testee = new FtpAccessor(ftpClient);
