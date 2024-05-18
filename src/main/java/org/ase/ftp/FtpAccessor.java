@@ -1,5 +1,6 @@
 package org.ase.ftp;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -41,15 +42,10 @@ public class FtpAccessor {
         }
     }
 
-    public void copyFileFrom(Path sourcePath, Path destinationPath) {
-        try {
-            ftpClient.open();
-            download(sourcePath, destinationPath);
-            ftpClient.close();
-        } catch (IOException e) {
-            // TODO retry
-            throw new RuntimeException(e);
-        }
+    public void copyFileFrom(Path sourcePath, Path destinationPath) throws IOException {
+        ftpClient.open();
+        download(sourcePath, destinationPath);
+        ftpClient.close();
     }
 
     private void download(Path sourcePath, Path destinationPath) throws IOException {
@@ -60,19 +56,22 @@ public class FtpAccessor {
         return lastBackupTime.isBefore(modificationDate);
     }
 
-    private boolean isNotInFileIgnoreList(Path path) {
+    @VisibleForTesting
+    boolean isNotInFileIgnoreList(Path path) {
         List<String> ignoreList = List.of("trash");
         String fileName = path.getFileName().toString().toLowerCase().trim();
-        return !ignoreList.contains(fileName);
+        return ignoreList.stream().noneMatch(fileName::contains);
     }
 
-    private boolean isNotInDirectoryIgnoreList(Path path) {
+    @VisibleForTesting
+    boolean isNotInDirectoryIgnoreList(Path path) {
         List<String> ignoreList = List.of("sent", "private");
         String folderName = path.getFileName().toString().toLowerCase().trim();
-        return !ignoreList.contains(folderName);
+        return ignoreList.stream().noneMatch(folderName::contains);
     }
 
-    private boolean isImageOrVideoFile(Path path) {
+    @VisibleForTesting
+    boolean isImageOrVideoFile(Path path) {
         List<String> fileEndings = List.of(
                 ".jpg", ".jpeg", ".png", ".giv", ".tiff", ".bmp", ".svg", // image files
                 ".mp4", ".avi", ".mkv", ".mov", ".avchd", ".h264", ".265" // video files
