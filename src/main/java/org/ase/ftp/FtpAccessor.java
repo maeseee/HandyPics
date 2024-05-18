@@ -77,7 +77,7 @@ public class FtpAccessor {
                 ".mp4", ".avi", ".mkv", ".mov", ".avchd", ".h264", ".265" // video files
         );
 
-        String folderName = path.getFileName().toString().toLowerCase().trim();
-        return !fileEndings.contains(folderName);
+        String fileName = path.getFileName().toString().toLowerCase().trim();
+        return fileEndings.stream().anyMatch(fileName::endsWith);
     }
 }
