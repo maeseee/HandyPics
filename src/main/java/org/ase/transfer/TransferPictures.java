@@ -1,4 +1,4 @@
-package org.ase.picture;
+package org.ase.transfer;
 
 import lombok.RequiredArgsConstructor;
 import org.ase.ftp.FtpAccessor;

@@ -6,7 +6,7 @@ import org.ase.config.SystemPreparation;
 import org.ase.ftp.AndroidFtpClient;
 import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
-import org.ase.picture.TransferPictures;
+import org.ase.transfer.TransferPictures;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
