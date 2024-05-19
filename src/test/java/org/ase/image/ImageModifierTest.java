@@ -53,6 +53,18 @@ class ImageModifierTest {
         assertRatingOnImage(testee, outputFile);
     }
 
+    @Test
+    void shouldIgnorFile_whenPngFormat() throws ImageWriteException, IOException, ImageReadException {
+        String fileName = "smile.png";
+        Path imageFile = INPUT_FOLDER.resolve(fileName);
+        Path outputFile = OUTPUT_FOLDER.resolve(fileName);
+        ImageModifier testee = new ImageModifier();
+
+        testee.setJpegRating(imageFile, outputFile, 5);
+
+        assertThat(Files.exists(outputFile)).isFalse();
+    }
+
     private void assertRatingOnImage(ImageModifier testee, Path outputFile) throws ImageWriteException, IOException, ImageReadException {
         TiffOutputSet outputSet = testee.getTiffOutputSet(outputFile);
         TiffOutputDirectory exifDirectory = outputSet.getOrCreateRootDirectory();

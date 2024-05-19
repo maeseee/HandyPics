@@ -22,10 +22,18 @@ public class ImageModifier {
     private static final TagInfoShort RATING_PERCENT_TAG = new TagInfoShort("RatingPercent", 0x4749, TiffDirectoryType.EXIF_DIRECTORY_IFD0);
 
     public void setJpegRating(Path imageFile, Path outputFile, int rating) throws IOException, ImageReadException, ImageWriteException {
+        if (!isFileFormatThatSupportsRating(imageFile)) {
+            return;
+        }
         validateRating(rating);
         TiffOutputSet outputSet = getTiffOutputSet(imageFile);
         setRating(rating, outputSet);
         writeOutputFile(imageFile, outputFile, outputSet);
+    }
+
+    private boolean isFileFormatThatSupportsRating(Path imageFile) {
+        String fileName = imageFile.getFileName().toString().toLowerCase();
+        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg");
     }
 
     private void validateRating(int rating) {
