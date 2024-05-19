@@ -21,9 +21,10 @@ public class ImageModifier {
     private static final TagInfoShort RATING_TAG = new TagInfoShort("Rating", 0x4746, TiffDirectoryType.EXIF_DIRECTORY_IFD0);
     private static final TagInfoShort RATING_PERCENT_TAG = new TagInfoShort("RatingPercent", 0x4749, TiffDirectoryType.EXIF_DIRECTORY_IFD0);
 
-    public void setJpegRating(Path imageFile, Path outputFile, int rating) throws IOException, ImageReadException, ImageWriteException {
+    public void setJpegRating(Path imageFile, Path outputFile, int rating)
+            throws IOException, ImageReadException, ImageWriteException, UnsupportedFileTypeException {
         if (!isFileFormatThatSupportsRating(imageFile)) {
-            return;
+            throw new UnsupportedFileTypeException("Not supported image file: " + imageFile);
         }
         validateRating(rating);
         TiffOutputSet outputSet = getTiffOutputSet(imageFile);

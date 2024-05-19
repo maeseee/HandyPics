@@ -43,7 +43,7 @@ class ImageModifierTest {
     }
 
     @Test
-    void shouldAddFiveStars_whenAskedFor() throws ImageWriteException, IOException, ImageReadException {
+    void shouldAddFiveStars_whenAskedFor() throws ImageWriteException, IOException, ImageReadException, UnsupportedFileTypeException {
         String fileName = "smile.jpg";
         Path imageFile = INPUT_FOLDER.resolve(fileName);
         Path outputFile = OUTPUT_FOLDER.resolve(fileName);
@@ -56,19 +56,17 @@ class ImageModifierTest {
     }
 
     @Test
-    void shouldIgnorFile_whenPngFormat() throws ImageWriteException, IOException, ImageReadException {
+    void shouldThrow_whenPngFormat() {
         String fileName = "smile.png";
         Path imageFile = INPUT_FOLDER.resolve(fileName);
         Path outputFile = OUTPUT_FOLDER.resolve(fileName);
         ImageModifier testee = new ImageModifier();
 
-        testee.setJpegRating(imageFile, outputFile, 5);
-
-        assertThat(Files.exists(outputFile)).isFalse();
+        assertThrows(UnsupportedFileTypeException.class, () -> testee.setJpegRating(imageFile, outputFile, 5));
     }
 
     @Test
-    void shouldThrow_whenFileNotFound() throws ImageWriteException, IOException, ImageReadException {
+    void shouldThrow_whenFileNotFound() {
         String fileName = "invalid.jpg";
         Path imageFile = INPUT_FOLDER.resolve(fileName);
         Path outputFile = OUTPUT_FOLDER.resolve(fileName);
