@@ -73,18 +73,4 @@ public class ImageModifier {
             new ExifRewriter().updateExifMetadataLossless(imageFile.toFile(), fos, outputSet);
         }
     }
-
-    public static void main(String[] args) {
-        Path jpegFile = Path.of("IMG_20240104_155120.jpg");
-        Path outputFile = Path.of("IMG_20240104_155120_rated.jpg");
-        int rating = 5;  // 5-star rating
-        ImageModifier imageModifier = new ImageModifier();
-
-        try {
-            imageModifier.setJpegRating(jpegFile, outputFile, rating);
-            System.out.println("Rating set successfully.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
