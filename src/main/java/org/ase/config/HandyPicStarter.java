@@ -1,5 +1,6 @@
 package org.ase.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
 
 import java.io.BufferedReader;
@@ -14,7 +15,15 @@ public class HandyPicStarter {
 
     private final BufferedReader reader;
 
-    public void showWarningForExport() {
+    public Config readConfig() {
+        showWarningForExport();
+        ConfigReader configReader = new ConfigReader(WORKING_PATH, reader);
+        Config config = configReader.readConfig();
+        prepareFolderPath(config.destinationWorkPath());
+        return config;
+    }
+
+    private void showWarningForExport() {
         System.out.println("Have you copied the favourites pictures to the album \"Best\"?");
         try {
             reader.readLine();
@@ -23,14 +32,10 @@ public class HandyPicStarter {
         }
     }
 
-    public void prepareFolderPath(Path destinationWorkPath) {
+    @VisibleForTesting
+    void prepareFolderPath(Path destinationWorkPath) {
         createFolderPathIfNotExists(destinationWorkPath);
         printWarningIfFolderPathNotEmpty(destinationWorkPath);
-    }
-
-    public Config readConfig() {
-        ConfigReader configReader = new ConfigReader(WORKING_PATH, reader);
-        return configReader.readConfig();
     }
 
     private void createFolderPathIfNotExists(Path destinationWorkPath) {
