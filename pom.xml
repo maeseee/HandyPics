@@ -72,6 +72,11 @@
             <version>3.1.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- Image Lib -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-imaging</artifactId>
+            <version>1.0-alpha1</version>
+        </dependency>
     </dependencies>
-
 </project>
