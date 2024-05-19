@@ -49,7 +49,7 @@ public class FtpAccessor {
     }
 
     private void download(Path sourcePath, Path destinationPath) throws IOException {
-        ftpClient.downloadFile(sourcePath.toString(), destinationPath.toString());
+        ftpClient.downloadFile(sourcePath.toString(), destinationPath.resolve(sourcePath.getFileName()).toString());
     }
 
     private boolean isModificationDateNewer(LocalDateTime lastBackupTime, LocalDateTime modificationDate) {
