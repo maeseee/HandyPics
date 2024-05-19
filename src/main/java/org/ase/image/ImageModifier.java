@@ -1,5 +1,6 @@
 package org.ase.image;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.Imaging;
@@ -33,7 +34,8 @@ public class ImageModifier {
         }
     }
 
-    private TiffOutputSet getTiffOutputSet(Path imageFile) throws ImageReadException, IOException, ImageWriteException {
+    @VisibleForTesting
+    TiffOutputSet getTiffOutputSet(Path imageFile) throws ImageReadException, IOException, ImageWriteException {
         TiffOutputSet outputSet = null;
         ImageMetadata metadata = Imaging.getMetadata(imageFile.toFile());
         if (metadata instanceof JpegImageMetadata jpegMetadata) {
@@ -57,7 +59,7 @@ public class ImageModifier {
         return (short) ((rating * 20) - 1);
     }
 
-    private static void writeOutputFile(Path imageFile, Path outputFile, TiffOutputSet outputSet)
+    private void writeOutputFile(Path imageFile, Path outputFile, TiffOutputSet outputSet)
             throws IOException, ImageReadException, ImageWriteException {
         try (FileOutputStream fos = new FileOutputStream(outputFile.toFile())) {
             new ExifRewriter().updateExifMetadataLossless(imageFile.toFile(), fos, outputSet);

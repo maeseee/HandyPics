@@ -2,6 +2,9 @@ package org.ase.image;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputField;
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,8 +12,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ImageModifierTest {
 
@@ -45,6 +50,27 @@ class ImageModifierTest {
         testee.setJpegRating(imageFile, outputFile, 5);
 
         assertThat(Files.exists(outputFile)).isTrue();
+        assertRatingOnImage(testee, outputFile);
+    }
+
+    private void assertRatingOnImage(ImageModifier testee, Path outputFile) throws ImageWriteException, IOException, ImageReadException {
+        TiffOutputSet outputSet = testee.getTiffOutputSet(outputFile);
+        TiffOutputDirectory exifDirectory = outputSet.getOrCreateRootDirectory();
+        List<TiffOutputField> fields = exifDirectory.getFields();
+
+        assertRating(fields, "Rating", 0x4746, 5);
+
+        assertRating(fields, "RatingPercent", 0x4749, 99);
+    }
+
+    private static void assertRating(List<TiffOutputField> fields, String tagName, int tagCode, int expectedRating) {
+        Optional<TiffOutputField> ratingPercent =
+                fields.stream().filter(tiffOutputField -> tagName.equals(tiffOutputField.tagInfo.name)).findFirst();
+        assertThat(ratingPercent).isPresent();
+        assertThat(ratingPercent.get().tag).isEqualTo(tagCode);
+        byte[] ratingBytes = new byte[2];
+        ratingBytes[0] = (byte) expectedRating;
+        assertThat(ratingPercent.get().bytesEqual(ratingBytes)).isTrue();
     }
 
     // FileNotFoundException
