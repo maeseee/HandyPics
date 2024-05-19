@@ -30,7 +30,7 @@ class ConfigReaderTest {
                 .thenReturn(folderName);
         ConfigReader testee = new ConfigReader(Path.of("src"), reader);
 
-        Config config = testee.read();
+        Config config = testee.readConfig();
 
         assertThat(config.ipAddress()).isEqualTo(ipAddress);
         assertThat(config.destinationWorkPath().getFileName().toString()).isEqualTo(folderName);
@@ -49,7 +49,7 @@ class ConfigReaderTest {
                 .thenReturn(folderName);
         ConfigReader testee = new ConfigReader(Path.of("src"), reader);
 
-        Config config = testee.read();
+        Config config = testee.readConfig();
 
         assertThat(config.ipAddress()).isEqualTo(ipAddress);
         assertThat(config.destinationWorkPath().getFileName().toString()).isEqualTo(folderName);
@@ -59,7 +59,7 @@ class ConfigReaderTest {
     void shouldThrow_whenWorkingPathNotExists() {
         ConfigReader testee = new ConfigReader(Path.of("invalid"), reader);
 
-        assertThrows(RuntimeException.class, testee::read);
+        assertThrows(RuntimeException.class, testee::readConfig);
     }
 
     @ParameterizedTest

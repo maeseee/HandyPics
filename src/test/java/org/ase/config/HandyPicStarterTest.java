@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class SystemPreparationTest {
+class HandyPicStarterTest {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
@@ -37,7 +37,7 @@ class SystemPreparationTest {
     @Test
     @SuppressWarnings("unused")
     void shouldCreateFolder_whenNotExists() {
-        SystemPreparation testee = new SystemPreparation(reader);
+        HandyPicStarter testee = new HandyPicStarter(reader);
         Path folderPath = Path.of("unittest");
 
         testee.prepareFolderPath(folderPath);
@@ -51,7 +51,7 @@ class SystemPreparationTest {
     @Test
     @SuppressWarnings("unused")
     void shouldDrawWarning_whenFolderNotEmpty() throws IOException {
-        SystemPreparation testee = new SystemPreparation(reader);
+        HandyPicStarter testee = new HandyPicStarter(reader);
         Path folderPath = Path.of("unittest");
         Files.createDirectory(folderPath);
         Path notEmptyPath = Path.of("unittest/notEmpty");

@@ -9,7 +9,8 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class SystemPreparation {
+public class HandyPicStarter {
+    private static final Path WORKING_PATH = Path.of("C:/Users/maese/Bilder/FromHandy");
 
     private final BufferedReader reader;
 
@@ -25,6 +26,11 @@ public class SystemPreparation {
     public void prepareFolderPath(Path destinationWorkPath) {
         createFolderPathIfNotExists(destinationWorkPath);
         printWarningIfFolderPathNotEmpty(destinationWorkPath);
+    }
+
+    public Config readConfig() {
+        ConfigReader configReader = new ConfigReader(WORKING_PATH, reader);
+        return configReader.readConfig();
     }
 
     private void createFolderPathIfNotExists(Path destinationWorkPath) {

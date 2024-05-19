@@ -17,7 +17,7 @@ public class ConfigReader {
     private final Path workingPath;
     private final BufferedReader reader;
 
-    public Config read() {
+    public Config readConfig() {
         validateWorkingPath();
 
         Optional<String> ipAddress;
