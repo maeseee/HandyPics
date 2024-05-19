@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ImageModifierTest {
 
@@ -65,6 +67,16 @@ class ImageModifierTest {
         assertThat(Files.exists(outputFile)).isFalse();
     }
 
+    @Test
+    void shouldThrow_whenFileNotFound() throws ImageWriteException, IOException, ImageReadException {
+        String fileName = "invalid.jpg";
+        Path imageFile = INPUT_FOLDER.resolve(fileName);
+        Path outputFile = OUTPUT_FOLDER.resolve(fileName);
+        ImageModifier testee = new ImageModifier();
+
+        assertThrows(FileNotFoundException.class, () -> testee.setJpegRating(imageFile, outputFile, 5));
+    }
+
     private void assertRatingOnImage(ImageModifier testee, Path outputFile) throws ImageWriteException, IOException, ImageReadException {
         TiffOutputSet outputSet = testee.getTiffOutputSet(outputFile);
         TiffOutputDirectory exifDirectory = outputSet.getOrCreateRootDirectory();
@@ -84,6 +96,4 @@ class ImageModifierTest {
         ratingBytes[0] = (byte) expectedRating;
         assertThat(ratingPercent.get().bytesEqual(ratingBytes)).isTrue();
     }
-
-    // FileNotFoundException
 }
