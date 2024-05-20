@@ -22,6 +22,7 @@ public class FtpAccessor {
                 .map(FileProperty::filePath)
                 .filter(this::isNotInFileIgnoreList)
                 .filter(this::isImageOrVideoFile)
+                .filter(path -> doesNotExistYet(path, destinationPath))
                 .toList();
 
         int processedFiles = 0;
@@ -82,5 +83,11 @@ public class FtpAccessor {
 
         String fileName = path.getFileName().toString().toLowerCase().trim();
         return fileEndings.stream().anyMatch(fileName::endsWith);
+    }
+
+    @VisibleForTesting
+    boolean doesNotExistYet(Path path, Path destinationPath) {
+        Path destinationFile = destinationPath.resolve(path.getFileName().toString());
+        return !Files.exists(destinationFile);
     }
 }
