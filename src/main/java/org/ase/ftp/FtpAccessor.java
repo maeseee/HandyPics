@@ -25,7 +25,7 @@ public class FtpAccessor {
                 .toList();
 
         for (Path filePath : filteredList) {
-            download(filePath, destinationPath.resolve(filePath.getFileName()));
+            download(filePath, destinationPath);
         }
         ftpClient.close();
 
