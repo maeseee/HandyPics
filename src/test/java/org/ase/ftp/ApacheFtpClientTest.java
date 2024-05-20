@@ -66,6 +66,16 @@ class ApacheFtpClientTest {
     }
 
     @Test
+    public void shouldReturnEmptyList_whenSourceFolderDoesNotExist() throws IOException {
+        Collection<FileProperty> files = ftpClient.listFiles(Paths.get("notExistingFolder"));
+
+        List<Path> filePathList = files.stream()
+                .map(FileProperty::filePath)
+                .collect(toList());
+        assertThat(filePathList).isEmpty();
+    }
+
+    @Test
     public void shouldHaveDirectoriesInItsList_whenListingRemoteDirs() throws IOException {
         Collection<Path> files = ftpClient.listDirectories(Paths.get(""));
 
