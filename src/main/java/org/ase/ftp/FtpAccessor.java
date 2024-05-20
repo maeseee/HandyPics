@@ -24,7 +24,10 @@ public class FtpAccessor {
                 .filter(this::isImageOrVideoFile)
                 .toList();
 
+        int processedFiles = 0;
         for (Path filePath : filteredList) {
+            processedFiles++;
+            System.out.println("Copying " + filePath + " (" + processedFiles + "/" + filteredList.size() + ")");
             download(filePath, destinationPath);
         }
         ftpClient.close();

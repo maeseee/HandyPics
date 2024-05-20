@@ -25,17 +25,21 @@ public class HandyPicStarter {
 
     private void showWarningForExport() {
         System.out.println("Have you copied the favourites pictures to the album \"Best\"?");
-        try {
-            reader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException("Could not read input to continue");
-        }
+        anyUserInput();
     }
 
     @VisibleForTesting
     void prepareFolderPath(Path destinationWorkPath) {
         createFolderPathIfNotExists(destinationWorkPath);
         printWarningIfFolderPathNotEmpty(destinationWorkPath);
+    }
+
+    private void anyUserInput() {
+        try {
+            reader.readLine();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read input to continue");
+        }
     }
 
     private void createFolderPathIfNotExists(Path destinationWorkPath) {
@@ -51,6 +55,7 @@ public class HandyPicStarter {
             boolean hasContent = stream.findAny().isPresent();
             if (hasContent) {
                 System.out.println("Destination folder is NOT empty!");
+                anyUserInput();
             }
         } catch (IOException e) {
             throw new RuntimeException("Error on opening destination folder " + destinationWorkPath);

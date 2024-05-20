@@ -41,7 +41,8 @@ public class TransferPictures {
             accessor.copyFilesFrom(backupFolder.folder(), this.destinationPath.resolve(backupFolder.destinationSubFolder()), lastBackupTime);
         } catch (IOException e) {
             // TODO retry!
-            System.err.println("ERROR: " + backupFolder.folder() + " -> " + this.destinationPath.resolve(backupFolder.destinationSubFolder()));
+            System.err.println("ERROR: " + backupFolder.folder() + " -> " + this.destinationPath.resolve(backupFolder.destinationSubFolder()) + "\n" +
+                    e.getMessage());
         }
     }
 }
