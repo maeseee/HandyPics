@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -15,7 +16,6 @@ public class FtpAccessor {
     private final FtpClient ftpClient;
 
     public void copyFilesFrom(Path sourcePath, Path destinationPath, LocalDateTime lastBackupTime) throws IOException {
-        ftpClient.open();
         Collection<FileProperty> files = ftpClient.listFiles(sourcePath);
         List<Path> filteredList = files.stream()
                 .filter(fileProperty -> isModificationDateNewer(lastBackupTime, fileProperty.modificationDate()))
@@ -29,9 +29,8 @@ public class FtpAccessor {
         for (Path filePath : filteredList) {
             processedFiles++;
             System.out.println("Copying " + filePath + " (" + processedFiles + "/" + filteredList.size() + ")");
-            download(filePath, destinationPath);
+            copyFileFrom(filePath, destinationPath);
         }
-        ftpClient.close();
 
         callSubdirectories(sourcePath, destinationPath, lastBackupTime);
     }
@@ -47,12 +46,6 @@ public class FtpAccessor {
     }
 
     public void copyFileFrom(Path sourcePath, Path destinationPath) throws IOException {
-        ftpClient.open();
-        download(sourcePath, destinationPath);
-        ftpClient.close();
-    }
-
-    private void download(Path sourcePath, Path destinationPath) throws IOException {
         ftpClient.downloadFile(sourcePath.toString(), destinationPath.resolve(sourcePath.getFileName()).toString());
     }
 
@@ -69,7 +62,7 @@ public class FtpAccessor {
 
     @VisibleForTesting
     boolean isNotInDirectoryIgnoreList(Path path) {
-        List<String> ignoreList = List.of("sent", "private", "audio");
+        List<String> ignoreList = List.of("sent", "private", "audio", "thumbnails");
         String folderName = path.getFileName().toString().toLowerCase().trim();
         return ignoreList.stream().noneMatch(folderName::contains);
     }

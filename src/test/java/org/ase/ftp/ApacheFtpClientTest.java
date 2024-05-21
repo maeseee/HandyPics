@@ -44,12 +44,10 @@ class ApacheFtpClientTest {
         fakeFtpServer.start();
 
         ftpClient = new AndroidFtpClient("localhost", new PrintCommandListener(new PrintWriter(System.out)));
-        ftpClient.open();
     }
 
     @AfterEach
     public void teardown() throws IOException {
-        ftpClient.close();
         fakeFtpServer.stop();
     }
 
@@ -86,7 +84,7 @@ class ApacheFtpClientTest {
 
     @Test
     public void shouldHaveFileOnTheLocalFilesystem_whenDownloading() throws IOException {
-        ftpClient.downloadFile("/foobar.txt", "downloaded_buz.txt");
+        ftpClient.downloadFile("/data/foobar.txt", "downloaded_buz.txt");
 
         assertThat(new File("downloaded_buz.txt")).exists();
         new File("downloaded_buz.txt").deleteOnExit();

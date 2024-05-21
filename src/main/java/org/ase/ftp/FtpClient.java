@@ -6,10 +6,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 public interface FtpClient {
-    void open() throws IOException;
-
-    void close() throws IOException;
-
     Collection<FileProperty> listFiles(Path path) throws IOException;
 
     Collection<Path> listDirectories(Path path) throws IOException;

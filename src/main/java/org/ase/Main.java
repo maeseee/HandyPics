@@ -15,6 +15,5 @@ public class Main {
 
         HandyPics handyPics = new HandyPics(config);
         handyPics.transferImagesFromHandy();
-        handyPics.setRatingOnBestPics();
     }
 }

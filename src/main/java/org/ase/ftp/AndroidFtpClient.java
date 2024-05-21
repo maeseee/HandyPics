@@ -8,10 +8,12 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
@@ -37,7 +39,51 @@ public class AndroidFtpClient implements FtpClient {
     }
 
     @Override
-    public void open() throws IOException {
+    public Collection<FileProperty> listFiles(Path path) throws IOException {
+        open();
+        FTPFile[] files = ftp.listFiles(path.toString());
+        List<FileProperty> content = Arrays.stream(files)
+                .filter(FTPFile::isFile)
+                .map(ftpFile -> new FileProperty(
+                        path.resolve(ftpFile.getName()),
+                        ftpFile.getTimestampInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
+                .collect(toList());
+        close();
+        return content;
+    }
+
+    @Override
+    public Collection<Path> listDirectories(Path path) throws IOException {
+        open();
+        FTPFile[] files = ftp.listFiles(path.toString());
+        List<Path> content = Arrays.stream(files)
+                .filter(FTPFile::isDirectory)
+                .map(ftpFile -> path.resolve(ftpFile.getName()))
+                .collect(toList());
+        close();
+        return content;
+    }
+
+    @Override
+    public void putFileToPath(File file, String path) throws IOException {
+        open();
+        ftp.storeFile(path, new FileInputStream(file));
+        close();
+    }
+
+    @Override
+    public void downloadFile(String source, String destination) throws IOException {
+        open();
+        InputStream inputStream = ftp.retrieveFileStream(source);
+        if (inputStream == null) {
+            throw new FileNotFoundException(source);
+        }
+        Files.copy(inputStream, Path.of(destination)); // TODO pass Path
+        inputStream.close();
+        close();
+    }
+
+    private void open() throws IOException {
         ftp.connect(server, PORT);
         int reply = ftp.getReplyCode();
         if (!FTPReply.isPositiveCompletion(reply)) {
@@ -49,40 +95,8 @@ public class AndroidFtpClient implements FtpClient {
         ftp.setFileType(FTP.BINARY_FILE_TYPE);
     }
 
-    @Override
-    public void close() throws IOException {
+    private void close() throws IOException {
+        ftp.logout();
         ftp.disconnect();
-    }
-
-    @Override
-    public Collection<FileProperty> listFiles(Path path) throws IOException {
-        FTPFile[] files = ftp.listFiles(path.toString());
-        return Arrays.stream(files)
-                .filter(FTPFile::isFile)
-                .map(ftpFile -> new FileProperty(
-                        path.resolve(ftpFile.getName()),
-                        ftpFile.getTimestampInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()))
-                .collect(toList());
-    }
-
-    @Override
-    public Collection<Path> listDirectories(Path path) throws IOException {
-        FTPFile[] files = ftp.listFiles(path.toString());
-        return Arrays.stream(files)
-                .filter(FTPFile::isDirectory)
-                .map(ftpFile -> path.resolve(ftpFile.getName()))
-                .collect(toList());
-    }
-
-    @Override
-    public void putFileToPath(File file, String path) throws IOException {
-        ftp.storeFile(path, new FileInputStream(file));
-    }
-
-    @Override
-    public void downloadFile(String source, String destination) throws IOException {
-        OutputStream out = new BufferedOutputStream(new FileOutputStream(destination));
-        ftp.retrieveFile(source, out);
-        out.close();
     }
 }

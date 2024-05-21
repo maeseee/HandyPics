@@ -1,9 +1,14 @@
 package org.ase.transfer;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
 import org.ase.ftp.FtpAccessor;
+import org.ase.image.ImageModifier;
+import org.ase.image.UnsupportedFileTypeException;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -13,15 +18,15 @@ import java.util.List;
 public class TransferPictures {
 
     private final static List<BackupFolder> BACKUP_FOLDERS = List.of(
-            new BackupFolder(Path.of("DCIM/MyAlbums/Best"), "Best"), // Favourites on Oppo
-            new BackupFolder(Path.of("MIUI/Gallery/cloud/owner/best"), "Best"), // Favourites old on Xiaomi
-            new BackupFolder(Path.of("Pictures/Gallery/owner/best"), "Best"), // Favourites on Xiaomi
-            new BackupFolder(Path.of("MIUI/Gallery/cloud/owner"), "Best"), // Albums on Xiaomi
-            new BackupFolder(Path.of("DCIM"), "Camera"),
-            new BackupFolder(Path.of("Pictures"), "Signal"), // Signal on Oppo
-            new BackupFolder(Path.of("Bluetooth"), "Bluetooth"), // Bluetooth on Oppo
-            new BackupFolder(Path.of("MIUI/ShareMe"), "Bluetooth"), // Bluetooth on Xiaomi
-            new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp")
+            new BackupFolder(Path.of("DCIM/MyAlbums/Best"), "Camera", true), // Favourites on Oppo
+            new BackupFolder(Path.of("MIUI/Gallery/cloud/owner/best"), "Camera", true), // Favourites old on Xiaomi
+            new BackupFolder(Path.of("Pictures/Gallery/owner/best"), "Camera", true), // Favourites on Xiaomi
+            new BackupFolder(Path.of("MIUI/Gallery/cloud/owner"), "Camera", true), // Albums on Xiaomi
+            new BackupFolder(Path.of("DCIM"), "Camera", false),
+            new BackupFolder(Path.of("Pictures"), "Signal", false), // Signal on Oppo
+            new BackupFolder(Path.of("Bluetooth"), "Bluetooth", false), // Bluetooth on Oppo
+            new BackupFolder(Path.of("MIUI/ShareMe"), "Bluetooth", false), // Bluetooth on Xiaomi
+            new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp", false)
     );
 
     private final FtpAccessor accessor;
@@ -43,6 +48,28 @@ public class TransferPictures {
             // TODO retry!
             System.err.println("ERROR: " + backupFolder.folder() + " -> " + this.destinationPath.resolve(backupFolder.destinationSubFolder()) + "\n" +
                     e.getMessage());
+        }
+
+        // TODO get list from copyFilesFrom
+        if (backupFolder.bestRating()) {
+            //setBestRating(destinationPath);
+        }
+    }
+
+    private void setBestRating(Path destinationPath) {
+        ImageModifier imageModifier = new ImageModifier();
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(destinationPath)) {
+            for (Path file : stream) {
+                if (Files.isRegularFile(file)) {
+                    try {
+                        imageModifier.setJpegRating(file, file, 5);
+                    } catch (ImageReadException | ImageWriteException | UnsupportedFileTypeException e) {
+                        System.err.println(file.getFileName() + " could not be starred: " + e.getMessage());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
