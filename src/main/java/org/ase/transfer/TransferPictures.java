@@ -50,7 +50,6 @@ public class TransferPictures {
                     e.getMessage());
         }
 
-        // TODO get list from copyFilesFrom
         if (backupFolder.bestRating()) {
             setBestRating(destinationPath);
         }
@@ -62,7 +61,7 @@ public class TransferPictures {
             for (Path file : stream) {
                 if (Files.isRegularFile(file)) {
                     try {
-                        String filename = "rated_" + file.getFileName().toString();
+                        String filename = "rated_" + file.getFileName().toString(); // TODO use original file name
                         imageModifier.setJpegRating(file, file.getParent().resolve(filename), 5);
                     } catch (ImageReadException | ImageWriteException | UnsupportedFileTypeException e) {
                         System.err.println(file.getFileName() + " could not be starred: " + e.getMessage());

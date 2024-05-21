@@ -29,7 +29,7 @@ class ApacheFtpClientTest {
     private AndroidFtpClient ftpClient;
 
     @BeforeEach
-    public void setup() throws IOException {
+    public void setup() {
         fakeFtpServer = new FakeFtpServer();
         fakeFtpServer.addUserAccount(new UserAccount("android", "mySweetHandyAccess", "/data"));
 
@@ -47,7 +47,7 @@ class ApacheFtpClientTest {
     }
 
     @AfterEach
-    public void teardown() throws IOException {
+    public void teardown() {
         fakeFtpServer.stop();
     }
 
