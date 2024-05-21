@@ -52,7 +52,7 @@ public class TransferPictures {
 
         // TODO get list from copyFilesFrom
         if (backupFolder.bestRating()) {
-            //setBestRating(destinationPath);
+            setBestRating(destinationPath);
         }
     }
 

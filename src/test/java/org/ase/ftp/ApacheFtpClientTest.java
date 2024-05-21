@@ -84,7 +84,7 @@ class ApacheFtpClientTest {
 
     @Test
     public void shouldHaveFileOnTheLocalFilesystem_whenDownloading() throws IOException {
-        ftpClient.downloadFile("/data/foobar.txt", "downloaded_buz.txt");
+        ftpClient.downloadFile("/data/foobar.txt", Path.of("downloaded_buz.txt"));
 
         assertThat(new File("downloaded_buz.txt")).exists();
         new File("downloaded_buz.txt").deleteOnExit();

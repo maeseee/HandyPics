@@ -72,13 +72,13 @@ public class AndroidFtpClient implements FtpClient {
     }
 
     @Override
-    public void downloadFile(String source, String destination) throws IOException {
+    public void downloadFile(String source, Path destination) throws IOException {
         open();
         InputStream inputStream = ftp.retrieveFileStream(source);
         if (inputStream == null) {
             throw new FileNotFoundException(source);
         }
-        Files.copy(inputStream, Path.of(destination)); // TODO pass Path
+        Files.copy(inputStream, destination);
         inputStream.close();
         close();
     }

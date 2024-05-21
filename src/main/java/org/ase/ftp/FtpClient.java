@@ -12,5 +12,5 @@ public interface FtpClient {
 
     void putFileToPath(File file, String path) throws IOException;
 
-    void downloadFile(String source, String destination) throws IOException;
+    void downloadFile(String source, Path destination) throws IOException;
 }
