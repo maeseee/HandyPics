@@ -62,7 +62,8 @@ public class TransferPictures {
             for (Path file : stream) {
                 if (Files.isRegularFile(file)) {
                     try {
-                        imageModifier.setJpegRating(file, file, 5);
+                        String filename = "rated_" + file.getFileName().toString();
+                        imageModifier.setJpegRating(file, file.getParent().resolve(filename), 5);
                     } catch (ImageReadException | ImageWriteException | UnsupportedFileTypeException e) {
                         System.err.println(file.getFileName() + " could not be starred: " + e.getMessage());
                     }
