@@ -38,11 +38,9 @@ public class TransferPictures {
     }
 
     private void copyFolder(BackupFolder backupFolder) {
-        Path destinationPath = this.destinationPath.resolve(backupFolder.destinationSubFolderName());
+        Path destinationFolder = this.destinationPath.resolve(backupFolder.destinationSubFolderName());
+        createFolderIfNotExists(destinationFolder);
         try {
-            if (!Files.exists(destinationPath)) {
-                Files.createDirectory(destinationPath);
-            }
             accessor.copyFilesFrom(backupFolder.sourceFolder(), this.destinationPath.resolve(backupFolder.destinationSubFolderName()),
                     lastBackupTime);
         } catch (IOException e) {
@@ -53,7 +51,18 @@ public class TransferPictures {
         }
 
         if (backupFolder.bestRating()) {
-            setBestRating(destinationPath);
+            setBestRating(destinationFolder);
+        }
+    }
+
+    private void createFolderIfNotExists(Path destinationFolder) {
+        if (!Files.exists(destinationFolder)) {
+            try {
+                Files.createDirectory(destinationFolder);
+            } catch (IOException e) {
+                System.err.println(destinationFolder + " could not be created!\n" + e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
     }
 
