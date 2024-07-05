@@ -31,22 +31,23 @@ public class TransferPictures {
 
     private final FtpAccessor accessor;
     private final LocalDateTime lastBackupTime;
-    private final Path destinationPath;
+    private final Path destinationRootFolder;
 
     public void copy() {
         BACKUP_FOLDERS.forEach(this::copyFolder);
     }
 
     private void copyFolder(BackupFolder backupFolder) {
-        Path destinationFolder = this.destinationPath.resolve(backupFolder.destinationSubFolderName());
+        Path destinationFolder = this.destinationRootFolder.resolve(backupFolder.destinationSubFolderName());
         createFolderIfNotExists(destinationFolder);
         try {
-            accessor.copyFilesFrom(backupFolder.sourceFolder(), this.destinationPath.resolve(backupFolder.destinationSubFolderName()),
+            accessor.copyFilesFrom(backupFolder.sourceFolder(), this.destinationRootFolder.resolve(backupFolder.destinationSubFolderName()),
                     lastBackupTime);
         } catch (IOException e) {
             // TODO retry!
             System.err.println(
-                    "ERROR: " + backupFolder.sourceFolder() + " -> " + this.destinationPath.resolve(backupFolder.destinationSubFolderName()) + "\n" +
+                    "ERROR: " + backupFolder.sourceFolder() + " -> " + this.destinationRootFolder.resolve(backupFolder.destinationSubFolderName()) +
+                            "\n" +
                             e.getMessage());
         }
 

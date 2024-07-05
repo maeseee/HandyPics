@@ -11,15 +11,15 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class HandyPicStarter {
-    private static final Path WORKING_PATH = Path.of("C:/Users/maese/Bilder/FromHandy");
+    private static final Path DESTINATION_ROOT = Path.of("C:/Users/maese/Bilder/FromHandy");
 
     private final BufferedReader reader;
 
     public Config readConfig() {
         showWarningForExport();
-        ConfigReader configReader = new ConfigReader(WORKING_PATH, reader);
+        ConfigReader configReader = new ConfigReader(DESTINATION_ROOT, reader);
         Config config = configReader.readConfig();
-        prepareFolderPath(config.destinationWorkPath());
+        prepareFolderPath(config.destinationRootFolder());
         return config;
     }
 

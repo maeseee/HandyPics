@@ -33,7 +33,7 @@ class ConfigReaderTest {
         Config config = testee.readConfig();
 
         assertThat(config.ipAddress()).isEqualTo(ipAddress);
-        assertThat(config.destinationWorkPath().getFileName().toString()).isEqualTo(folderName);
+        assertThat(config.destinationRootFolder().getFileName().toString()).isEqualTo(folderName);
     }
 
     @Test
@@ -52,7 +52,7 @@ class ConfigReaderTest {
         Config config = testee.readConfig();
 
         assertThat(config.ipAddress()).isEqualTo(ipAddress);
-        assertThat(config.destinationWorkPath().getFileName().toString()).isEqualTo(folderName);
+        assertThat(config.destinationRootFolder().getFileName().toString()).isEqualTo(folderName);
     }
 
     @Test

@@ -25,14 +25,14 @@ public class HandyPics {
     public void transferImagesFromHandy() {
         loadLastBackupTime();
 
-        TransferPictures transferPictures = new TransferPictures(ftpAccessor, lastBackupTime, config.destinationWorkPath());
+        TransferPictures transferPictures = new TransferPictures(ftpAccessor, lastBackupTime, config.destinationRootFolder());
         transferPictures.copy();
 
         // TODO save backup time
     }
 
     private void loadLastBackupTime() {
-        LastBackup lastBackup = new LastBackup(config.destinationWorkPath());
+        LastBackup lastBackup = new LastBackup(config.destinationRootFolder());
         lastBackup.loadLastBackup(ftpAccessor);
         lastBackupTime = lastBackup.readLastBackupTimeFromFile();
     }
