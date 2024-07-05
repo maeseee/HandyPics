@@ -38,16 +38,18 @@ public class TransferPictures {
     }
 
     private void copyFolder(BackupFolder backupFolder) {
-        Path destinationPath = this.destinationPath.resolve(backupFolder.destinationSubFolder());
+        Path destinationPath = this.destinationPath.resolve(backupFolder.destinationSubFolderName());
         try {
             if (!Files.exists(destinationPath)) {
                 Files.createDirectory(destinationPath);
             }
-            accessor.copyFilesFrom(backupFolder.folder(), this.destinationPath.resolve(backupFolder.destinationSubFolder()), lastBackupTime);
+            accessor.copyFilesFrom(backupFolder.sourceFolder(), this.destinationPath.resolve(backupFolder.destinationSubFolderName()),
+                    lastBackupTime);
         } catch (IOException e) {
             // TODO retry!
-            System.err.println("ERROR: " + backupFolder.folder() + " -> " + this.destinationPath.resolve(backupFolder.destinationSubFolder()) + "\n" +
-                    e.getMessage());
+            System.err.println(
+                    "ERROR: " + backupFolder.sourceFolder() + " -> " + this.destinationPath.resolve(backupFolder.destinationSubFolderName()) + "\n" +
+                            e.getMessage());
         }
 
         if (backupFolder.bestRating()) {

@@ -31,7 +31,7 @@ public class HandyPicStarter {
     @VisibleForTesting
     void prepareFolderPath(Path destinationWorkPath) {
         createFolderPathIfNotExists(destinationWorkPath);
-        printWarningIfFolderPathNotEmpty(destinationWorkPath);
+        printWarningIfDestinationFolderNotEmpty(destinationWorkPath);
     }
 
     private void anyUserInput() {
@@ -50,7 +50,7 @@ public class HandyPicStarter {
         }
     }
 
-    private void printWarningIfFolderPathNotEmpty(Path destinationWorkPath) {
+    private void printWarningIfDestinationFolderNotEmpty(Path destinationWorkPath) {
         try (Stream<Path> stream = Files.list(destinationWorkPath)) {
             boolean hasContent = stream.findAny().isPresent();
             if (hasContent) {
@@ -58,7 +58,7 @@ public class HandyPicStarter {
                 anyUserInput();
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error on opening destination folder " + destinationWorkPath);
+            throw new RuntimeException("Error on opening the destination folder " + destinationWorkPath);
         }
     }
 }

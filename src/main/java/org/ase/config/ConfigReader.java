@@ -25,12 +25,12 @@ public class ConfigReader {
             ipAddress = readFtpServerAddress();
         } while (ipAddress.isEmpty());
 
-        Optional<Path> folderName;
+        Optional<Path> destinationFolder;
         do {
-            folderName = readFolderName();
-        } while (folderName.isEmpty());
+            destinationFolder = readDestinationFolder();
+        } while (destinationFolder.isEmpty());
 
-        return new Config(ipAddress.get(), folderName.get());
+        return new Config(ipAddress.get(), destinationFolder.get());
     }
 
     private void validateWorkingPath() {
@@ -58,7 +58,7 @@ public class ConfigReader {
         return InetAddresses.isInetAddress(inputString);
     }
 
-    private Optional<Path> readFolderName() {
+    private Optional<Path> readDestinationFolder() {
         System.out.println("Enter the folder name of the destination:");
         try {
             String inputString = reader.readLine();
@@ -70,7 +70,7 @@ public class ConfigReader {
             }
             return Optional.of(workingPath.resolve(inputString));
         } catch (IOException e) {
-            throw new RuntimeException("Could not read folder name");
+            throw new RuntimeException("Could not read folder name of the destination");
         }
     }
 
