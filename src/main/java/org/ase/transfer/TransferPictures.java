@@ -42,18 +42,20 @@ public class TransferPictures {
     }
 
     public void copy() {
-        favouriteBackupFolders.forEach(this::copyFolder);
-        favouriteBackupFolders.forEach(backupFolder -> setBestRating(backupFolder.destinationSubFolder()));
-        backupFolders.forEach(this::copyFolder);
+        favouriteBackupFolders.forEach(backupFolders -> copyFolder(backupFolders.sourceFolder(), backupFolders.destinationSubFolder(), true));
+        backupFolders.forEach(backupFolders -> copyFolder(backupFolders.sourceFolder(), backupFolders.destinationSubFolder(), false));
     }
 
-    private void copyFolder(BackupFolder backupFolder) {
-        createFolderIfNotExists(backupFolder.destinationSubFolder());
+    private void copyFolder(Path sourceFolder, Path destinationFolder, boolean isFavorite) {
+        createFolderIfNotExists(destinationFolder);
         try {
-            accessor.copyFilesFrom(backupFolder.sourceFolder(), backupFolder.destinationSubFolder(), lastBackupTime);
+            accessor.copyFilesFrom(sourceFolder, destinationFolder, lastBackupTime);
         } catch (IOException e) {
             // TODO retry!
-            System.err.println("ERROR: " + backupFolder.sourceFolder() + " -> " + backupFolder.destinationSubFolder() + "\n" + e.getMessage());
+            System.err.println("ERROR: " + sourceFolder + " -> " + destinationFolder + "\n" + e.getMessage());
+        }
+        if (isFavorite) {
+            setBestRating(destinationFolder);
         }
     }
 
@@ -68,9 +70,9 @@ public class TransferPictures {
         }
     }
 
-    private void setBestRating(Path destinationPath) {
+    private void setBestRating(Path destinationFolder) {
         ImageModifier imageModifier = new ImageModifier();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(destinationPath)) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(destinationFolder)) {
             for (Path file : stream) {
                 if (Files.isRegularFile(file)) {
                     try {
