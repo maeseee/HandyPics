@@ -15,5 +15,7 @@ public class Main {
 
         HandyPics handyPics = new HandyPics(config);
         handyPics.transferImagesFromHandy();
+
+        System.out.println("ALL FINISHED SUCCESSFULLY :-)");
     }
 }
