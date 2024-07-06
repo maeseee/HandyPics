@@ -24,6 +24,7 @@ public class TransferPictures {
     private final List<BackupFolder> backupFolders;
 
     public void copy(boolean isFavorite) {
+        createFolderIfNotExists(destinationRootFolder);
         backupFolders.forEach(backupFolder -> copyFolder(backupFolder, isFavorite));
     }
 
