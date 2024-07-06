@@ -2,6 +2,7 @@ package org.ase;
 
 import com.google.common.collect.ImmutableList;
 import org.ase.config.Config;
+import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.AndroidFtpClient;
 import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
@@ -43,12 +44,13 @@ public class HandyPics {
     public void transferImagesFromHandy() {
         loadLastBackupTime();
 
+        FileAccessor fileAccessor = new FileAccessor();
         TransferPictures transferFavoritPictures =
-                new TransferPictures(ftpAccessor, lastBackupTime, config.destinationRootFolder(), FAVORIT_BACKUP_FOLDERS);
+                new TransferPictures(ftpAccessor, fileAccessor, lastBackupTime, config.destinationRootFolder(), FAVORIT_BACKUP_FOLDERS);
         transferFavoritPictures.copy(true);
 
         TransferPictures transferPictures =
-                new TransferPictures(ftpAccessor, lastBackupTime, config.destinationRootFolder(), BACKUP_FOLDERS);
+                new TransferPictures(ftpAccessor, fileAccessor, lastBackupTime, config.destinationRootFolder(), BACKUP_FOLDERS);
         transferPictures.copy(false);
 
         // TODO save backup time
