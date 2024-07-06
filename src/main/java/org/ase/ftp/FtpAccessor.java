@@ -39,6 +39,7 @@ public class FtpAccessor {
         Collection<Path> sourceDirectories = ftpClient.listDirectories(sourceFolder);
         List<Path> filteredList = sourceDirectories.stream()
                 .filter(this::isNotInDirectoryIgnoreList)
+                .filter(this::isNotHiddenDirectory)
                 .toList();
         for (Path subSourceFolder : filteredList) {
             copyFilesFrom(subSourceFolder, destinationFolder, lastBackupTime);
@@ -65,6 +66,12 @@ public class FtpAccessor {
         List<String> ignoreList = List.of("sent", "private", "audio", "thumbnails");
         String folderName = folder.getFileName().toString().toLowerCase().trim();
         return ignoreList.stream().noneMatch(folderName::contains);
+    }
+
+    @VisibleForTesting
+    boolean isNotHiddenDirectory(Path path) {
+        String directoryName = path.getFileName().toString();
+        return !directoryName.startsWith(".");
     }
 
     @VisibleForTesting

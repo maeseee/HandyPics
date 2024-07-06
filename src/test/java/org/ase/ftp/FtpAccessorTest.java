@@ -28,6 +28,15 @@ class FtpAccessorTest {
     }
 
     @Test
+    void shouldIgnoreFolder_whenFolderIsHidden() {
+        FtpAccessor testee = new FtpAccessor(ftpClient);
+
+        boolean notIgnored = testee.isNotHiddenDirectory(Path.of(".ThisIsAHiddenFolder"));
+
+        assertFalse(notIgnored);
+    }
+
+    @Test
     void shouldIgnoreFile_whenNameContainsTrash() {
         FtpAccessor testee = new FtpAccessor(ftpClient);
 
