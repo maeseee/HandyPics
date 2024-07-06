@@ -1,6 +1,6 @@
 package org.ase.transfer;
 
-import lombok.AllArgsConstructor;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.ase.fileAccess.FileAccessor;
@@ -13,21 +13,31 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@AllArgsConstructor
 public class TransferPictures {
 
     private final FtpAccessor ftpAccessor;
     private final FileAccessor fileAccessor;
-    private final LocalDateTime lastBackupTime;
     private final Path destinationRootFolder;
-    private final List<BackupFolder> backupFolders;
+    private final ImageModifier imageModifier;
 
-    public void copy(boolean isFavorite) {
-        fileAccessor.createDirectoryIfNotExists(destinationRootFolder);
-        backupFolders.forEach(backupFolder -> copyFolder(backupFolder, isFavorite));
+    public TransferPictures(FtpAccessor ftpAccessor, FileAccessor fileAccessor, Path destinationRootFolder) {
+        this(ftpAccessor, fileAccessor, destinationRootFolder, new ImageModifier());
     }
 
-    private void copyFolder(BackupFolder backupFolder, boolean isFavorite) {
+    @VisibleForTesting
+    TransferPictures(FtpAccessor ftpAccessor, FileAccessor fileAccessor, Path destinationRootFolder, ImageModifier imageModifier) {
+        this.ftpAccessor = ftpAccessor;
+        this.fileAccessor = fileAccessor;
+        this.destinationRootFolder = destinationRootFolder;
+        this.imageModifier = imageModifier;
+    }
+
+    public void copy(List<BackupFolder> backupFolders, LocalDateTime lastBackupTime, boolean isFavorite) {
+        fileAccessor.createDirectoryIfNotExists(destinationRootFolder);
+        backupFolders.forEach(backupFolder -> copyFolder(backupFolder, lastBackupTime, isFavorite));
+    }
+
+    private void copyFolder(BackupFolder backupFolder, LocalDateTime lastBackupTime, boolean isFavorite) {
         String favoriteSubFolderName = isFavorite ? backupFolder.destinationSubName() + "Favorite" : backupFolder.destinationSubName();
         Path favoriteDestinationFolder = createDestinationFolder(favoriteSubFolderName);
         try {
@@ -49,7 +59,6 @@ public class TransferPictures {
     }
 
     private void createFileWithBestRating(Path destinationFolder, Path inputFile) {
-        ImageModifier imageModifier = new ImageModifier();
         try {
             String filename = inputFile.getFileName().toString();
             imageModifier.setJpegRating(inputFile, destinationFolder.resolve(filename), 5);

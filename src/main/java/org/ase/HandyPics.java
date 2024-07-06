@@ -45,13 +45,11 @@ public class HandyPics {
         loadLastBackupTime();
 
         FileAccessor fileAccessor = new FileAccessor();
-        TransferPictures transferFavoritPictures =
-                new TransferPictures(ftpAccessor, fileAccessor, lastBackupTime, config.destinationRootFolder(), FAVORIT_BACKUP_FOLDERS);
-        transferFavoritPictures.copy(true);
+        TransferPictures transferFavoritPictures = new TransferPictures(ftpAccessor, fileAccessor, config.destinationRootFolder());
+        transferFavoritPictures.copy(FAVORIT_BACKUP_FOLDERS, lastBackupTime, true);
 
-        TransferPictures transferPictures =
-                new TransferPictures(ftpAccessor, fileAccessor, lastBackupTime, config.destinationRootFolder(), BACKUP_FOLDERS);
-        transferPictures.copy(false);
+        TransferPictures transferPictures = new TransferPictures(ftpAccessor, fileAccessor, config.destinationRootFolder());
+        transferPictures.copy(BACKUP_FOLDERS, lastBackupTime, false);
 
         // TODO save backup time
     }

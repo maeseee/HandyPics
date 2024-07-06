@@ -1,7 +1,11 @@
 package org.ase.transfer;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
 import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.FtpAccessor;
+import org.ase.image.ImageModifier;
+import org.ase.image.UnsupportedFileTypeException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -12,7 +16,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransferPicturesTest {
@@ -26,24 +30,34 @@ class TransferPicturesTest {
     private FtpAccessor ftpAccessor;
     @Mock
     private FileAccessor fileAccessor;
+    @Mock
+    private ImageModifier imageModifier;
 
     @Test
     void shouldCopyFilesFromSourceToDestination() throws IOException {
-        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, lastBackupTime, destinationRootFolder, backupFolders);
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
 
-        testee.copy(false);
+        testee.copy(backupFolders, lastBackupTime, false);
 
         Path expectedDestinationFolder = Path.of("test/subFolder");
         verify(ftpAccessor).copyFilesFrom(sourceFolder, expectedDestinationFolder, lastBackupTime);
+        verifyNoInteractions(imageModifier);
     }
 
     @Test
-    void shouldCopyFilesFromSourceToFavoritDestination_whenIsFavorit() throws IOException {
-        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, lastBackupTime, destinationRootFolder, backupFolders);
+    void shouldCopyFilesFromSourceToFavoritDestination_whenIsFavorit()
+            throws IOException, ImageWriteException, UnsupportedFileTypeException, ImageReadException {
+        Path temporaryDestinationFolder = Path.of("test/subFolderFavorite");
+        List<Path> inputFiles = List.of(temporaryDestinationFolder.resolve("image.jpg"));
+        when(fileAccessor.filesInDirectory(temporaryDestinationFolder)).thenReturn(inputFiles);
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
 
-        testee.copy(true);
+        testee.copy(backupFolders, lastBackupTime, true);
 
-        Path expectedDestinationFolder = Path.of("test/subFolderFavorite");
-        verify(ftpAccessor).copyFilesFrom(sourceFolder, expectedDestinationFolder, lastBackupTime);
+        verify(ftpAccessor).copyFilesFrom(sourceFolder, temporaryDestinationFolder, lastBackupTime);
+        Path expectedImageFile = temporaryDestinationFolder.resolve("image.jpg");
+        Path expectedDestinationFile = Path.of("test/subFolder/image.jpg");
+        verify(imageModifier).setJpegRating(expectedImageFile, expectedDestinationFile, 5);
+        verifyNoMoreInteractions(imageModifier);
     }
 }
