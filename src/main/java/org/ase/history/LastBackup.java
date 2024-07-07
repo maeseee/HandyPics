@@ -12,13 +12,15 @@ public class LastBackup {
 
     private final static Path LAST_BACKUP_FILE_PATH = Path.of("DCIM/LastBackup.txt");
 
+    private final FtpAccessor ftpAccessor;
     private final Path destinationWorkPath;
 
-    public LastBackup(Path destinationWorkPath) {
+    public LastBackup(FtpAccessor ftpAccessor, Path destinationWorkPath) {
+        this.ftpAccessor = ftpAccessor;
         this.destinationWorkPath = destinationWorkPath;
     }
 
-    public void loadLastBackup(FtpAccessor ftpAccessor) {
+    public void loadLastBackup() {
         try {
             ftpAccessor.copyFileFrom(LAST_BACKUP_FILE_PATH, destinationWorkPath);
         } catch (IOException e) {
@@ -56,7 +58,7 @@ public class LastBackup {
         return nowPath;
     }
 
-    public void storeNowFile(FtpAccessor ftpAccessor, Path nowFile) {
+    public void storeNowFile(Path nowFile) {
         try {
             ftpAccessor.storeFileTo(LAST_BACKUP_FILE_PATH, nowFile);
         } catch (IOException e) {
