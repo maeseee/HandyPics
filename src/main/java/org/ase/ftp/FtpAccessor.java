@@ -50,6 +50,10 @@ public class FtpAccessor {
         ftpClient.downloadFile(sourceFile, destinationFolder.resolve(sourceFile.getFileName()));
     }
 
+    public void storeFileTo(Path sourceFile, Path destinationFolder) throws IOException {
+        ftpClient.putFileToPath(sourceFile, destinationFolder.resolve(sourceFile.getFileName()));
+    }
+
     private boolean isModificationDateNewer(LocalDateTime lastBackupTime, LocalDateTime modificationDate) {
         return lastBackupTime.isBefore(modificationDate);
     }

@@ -93,12 +93,13 @@ class ApacheFtpClientTest {
     @Test
     @SuppressWarnings("unused")
     public void shouldHaveFileOnTheServer_whenUploadingIt() throws IOException {
-        File myFile = new File("myFile.txt");
-        boolean created = myFile.createNewFile();
+        Path sourceFile = Path.of("myFile.txt");
+        boolean created = sourceFile.toFile().createNewFile();
+        Path destinationFile = Path.of("/buz.txt");
 
-        ftpClient.putFileToPath(myFile, "/buz.txt");
+        ftpClient.putFileToPath(sourceFile, destinationFile);
 
         assertThat(fakeFtpServer.getFileSystem().exists("/buz.txt")).isTrue();
-        myFile.deleteOnExit();
+        sourceFile.toFile().deleteOnExit();
     }
 }

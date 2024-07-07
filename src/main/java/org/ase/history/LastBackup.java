@@ -2,9 +2,7 @@ package org.ase.history;
 
 import org.ase.ftp.FtpAccessor;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -46,4 +44,28 @@ public class LastBackup {
             throw new RuntimeException("Invalid format in the first line: " + e.getMessage());
         }
     }
+
+    public Path createFileFromNow() {
+        Path nowPath = destinationWorkPath.resolve("Now.txt");
+        File nowFile = nowPath.toFile();
+        try (FileWriter fileWriter = new FileWriter(nowFile, true)) {
+            fileWriter.write(getDateTimeString());
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating Now.txt file: " + e.getMessage());
+        }
+        return nowPath;
+    }
+
+    public void storeNowFile(FtpAccessor ftpAccessor, Path nowFile) {
+        try {
+            ftpAccessor.storeFileTo(LAST_BACKUP_FILE_PATH, nowFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read the backup time file: " + e.getMessage());
+        }
+    }
+
+    private String getDateTimeString() {
+        return String.valueOf(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+    }
+
 }

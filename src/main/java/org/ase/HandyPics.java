@@ -51,12 +51,18 @@ public class HandyPics {
         TransferPictures transferPictures = new TransferPictures(ftpAccessor, fileAccessor, config.destinationRootFolder());
         transferPictures.copy(BACKUP_FOLDERS, lastBackupTime, false);
 
-        // TODO save backup time
+        updateLastBackupTime();
     }
 
     private void loadLastBackupTime() {
         LastBackup lastBackup = new LastBackup(config.destinationRootFolder());
         lastBackup.loadLastBackup(ftpAccessor);
         lastBackupTime = lastBackup.readLastBackupTimeFromFile();
+    }
+
+    private void updateLastBackupTime() {
+        LastBackup lastBackup = new LastBackup(config.destinationRootFolder());
+        Path nowFile = lastBackup.createFileFromNow();
+        lastBackup.storeNowFile(ftpAccessor, nowFile);
     }
 }

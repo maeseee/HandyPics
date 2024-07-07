@@ -7,7 +7,10 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.ZoneId;
@@ -65,16 +68,16 @@ public class AndroidFtpClient implements FtpClient {
     }
 
     @Override
-    public void putFileToPath(File file, String path) throws IOException {
+    public void putFileToPath(Path sourceFile, Path destinationFile) throws IOException {
         open();
-        ftp.storeFile(path, new FileInputStream(file));
+        ftp.storeFile(toLinuxPath(destinationFile), new FileInputStream(sourceFile.toFile()));
         close();
     }
 
     @Override
     public void downloadFile(Path sourceFile, Path destinationFolder) throws IOException {
         open();
-        String linuxSourcePath = sourceFile.toString().replace("\\", "/");
+        String linuxSourcePath = toLinuxPath(sourceFile);
         InputStream inputStream = ftp.retrieveFileStream(linuxSourcePath);
         if (inputStream == null) {
             throw new FileNotFoundException(linuxSourcePath);
@@ -99,5 +102,9 @@ public class AndroidFtpClient implements FtpClient {
     private void close() throws IOException {
         ftp.logout();
         ftp.disconnect();
+    }
+
+    private String toLinuxPath(Path path) {
+        return path.toString().replace("\\", "/");
     }
 }
