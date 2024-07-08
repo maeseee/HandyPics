@@ -1,6 +1,6 @@
 package org.ase.transfer;
 
-import com.google.common.annotations.VisibleForTesting;
+import lombok.AllArgsConstructor;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.ase.fileAccess.FileAccessor;
@@ -13,24 +13,14 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@AllArgsConstructor
 public class TransferPictures {
 
     private final FtpAccessor ftpAccessor;
     private final FileAccessor fileAccessor;
     private final Path destinationRootFolder;
     private final ImageModifier imageModifier;
-
-    public TransferPictures(FtpAccessor ftpAccessor, FileAccessor fileAccessor, Path destinationRootFolder) {
-        this(ftpAccessor, fileAccessor, destinationRootFolder, new ImageModifier());
-    }
-
-    @VisibleForTesting
-    TransferPictures(FtpAccessor ftpAccessor, FileAccessor fileAccessor, Path destinationRootFolder, ImageModifier imageModifier) {
-        this.ftpAccessor = ftpAccessor;
-        this.fileAccessor = fileAccessor;
-        this.destinationRootFolder = destinationRootFolder;
-        this.imageModifier = imageModifier;
-    }
+    private final Retry retry;
 
     public void copy(List<BackupFolder> backupFolders, LocalDateTime lastBackupTime, boolean isFavorite) {
         fileAccessor.createDirectoryIfNotExists(destinationRootFolder);
@@ -40,12 +30,16 @@ public class TransferPictures {
     private void copyFolder(BackupFolder backupFolder, LocalDateTime lastBackupTime, boolean isFavorite) {
         String favoriteSubFolderName = isFavorite ? backupFolder.destinationSubName() + "Favorite" : backupFolder.destinationSubName();
         Path favoriteDestinationFolder = createDestinationFolder(favoriteSubFolderName);
-        try {
-            ftpAccessor.copyFilesFrom(backupFolder.sourceFolder(), favoriteDestinationFolder, lastBackupTime);
-        } catch (IOException e) {
-            // TODO retry!
-            System.err.println("ERROR: " + backupFolder.sourceFolder() + " -> " + favoriteDestinationFolder + "\n" + e.getMessage());
-        }
+
+        retry.callWithRetry(() -> {
+            try {
+                ftpAccessor.copyFilesFrom(backupFolder.sourceFolder(), favoriteDestinationFolder, lastBackupTime);
+            } catch (IOException e) {
+                System.err.println("ERROR: " + backupFolder.sourceFolder() + " -> " + favoriteDestinationFolder + "\n" + e.getMessage());
+                throw new RuntimeException(e);
+            }
+        });
+
         if (isFavorite) {
             Path destinationFolder = createDestinationFolder(backupFolder.destinationSubName());
             setBestRating(favoriteDestinationFolder, destinationFolder);

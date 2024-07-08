@@ -32,10 +32,12 @@ class TransferPicturesTest {
     private FileAccessor fileAccessor;
     @Mock
     private ImageModifier imageModifier;
+    @Mock
+    private Retry retry;
 
     @Test
     void shouldCopyFilesFromSourceToDestination() throws IOException {
-        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier, retry);
         List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
         testee.copy(backupFolders, lastBackupTime, false);
@@ -43,6 +45,7 @@ class TransferPicturesTest {
         Path expectedDestinationFolder = Path.of("test/subFolder");
         verify(ftpAccessor).copyFilesFrom(sourceFolder, expectedDestinationFolder, lastBackupTime);
         verifyNoInteractions(imageModifier);
+        verifyNoInteractions(retry);
     }
 
     @Test
@@ -51,7 +54,7 @@ class TransferPicturesTest {
         Path temporaryDestinationFolder = Path.of("test/subFolderFavorite");
         List<Path> inputFiles = List.of(temporaryDestinationFolder.resolve("image.jpg"));
         when(fileAccessor.filesInDirectory(temporaryDestinationFolder)).thenReturn(inputFiles);
-        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier, retry);
         List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
         testee.copy(backupFolders, lastBackupTime, true);
@@ -61,16 +64,18 @@ class TransferPicturesTest {
         Path expectedDestinationFile = Path.of("test/subFolder/image.jpg");
         verify(imageModifier).setJpegRating(expectedImageFile, expectedDestinationFile, 5);
         verifyNoMoreInteractions(imageModifier);
+        verifyNoInteractions(retry);
     }
 
     @Test
     void shouldNotCopyFiles_whenBackupFoldersEmpty() throws IOException {
-        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier, retry);
         List<BackupFolder> backupFolders = emptyList();
 
         testee.copy(backupFolders, lastBackupTime, false);
 
         verifyNoInteractions(ftpAccessor);
         verifyNoInteractions(imageModifier);
+        verifyNoInteractions(retry);
     }
 }
