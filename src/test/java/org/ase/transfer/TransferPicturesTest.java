@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +25,6 @@ class TransferPicturesTest {
     private final LocalDateTime lastBackupTime = LocalDateTime.now().minusDays(1);
     private final Path destinationRootFolder = Path.of("test");
     private final Path sourceFolder = Path.of("source");
-    private final List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
     @Mock
     private FtpAccessor ftpAccessor;
@@ -36,6 +36,7 @@ class TransferPicturesTest {
     @Test
     void shouldCopyFilesFromSourceToDestination() throws IOException {
         TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
+        List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
         testee.copy(backupFolders, lastBackupTime, false);
 
@@ -51,6 +52,7 @@ class TransferPicturesTest {
         List<Path> inputFiles = List.of(temporaryDestinationFolder.resolve("image.jpg"));
         when(fileAccessor.filesInDirectory(temporaryDestinationFolder)).thenReturn(inputFiles);
         TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
+        List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
         testee.copy(backupFolders, lastBackupTime, true);
 
@@ -59,5 +61,16 @@ class TransferPicturesTest {
         Path expectedDestinationFile = Path.of("test/subFolder/image.jpg");
         verify(imageModifier).setJpegRating(expectedImageFile, expectedDestinationFile, 5);
         verifyNoMoreInteractions(imageModifier);
+    }
+
+    @Test
+    void shouldNotCopyFiles_whenBackupFoldersEmpty() throws IOException {
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier);
+        List<BackupFolder> backupFolders = emptyList();
+
+        testee.copy(backupFolders, lastBackupTime, false);
+
+        verifyNoInteractions(ftpAccessor);
+        verifyNoInteractions(imageModifier);
     }
 }
