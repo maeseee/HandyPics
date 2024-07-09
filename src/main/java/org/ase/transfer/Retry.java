@@ -14,7 +14,7 @@ public class Retry {
     public void callWithRetry(Runnable method) {
         try {
             method.run();
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             if (askForRetry()) {
                 callWithRetry(method);
             } else {

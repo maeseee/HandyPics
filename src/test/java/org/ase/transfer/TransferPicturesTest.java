@@ -6,26 +6,24 @@ import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.FtpAccessor;
 import org.ase.image.ImageModifier;
 import org.ase.image.UnsupportedFileTypeException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransferPicturesTest {
-
-    private final LocalDateTime lastBackupTime = LocalDateTime.now().minusDays(1);
-    private final Path destinationRootFolder = Path.of("test");
-    private final Path sourceFolder = Path.of("source");
-
     @Mock
     private FtpAccessor ftpAccessor;
     @Mock
@@ -33,7 +31,17 @@ class TransferPicturesTest {
     @Mock
     private ImageModifier imageModifier;
     @Mock
-    private Retry retry;
+    private BufferedReader reader;
+
+    private final LocalDateTime lastBackupTime = LocalDateTime.now().minusDays(1);
+    private final Path destinationRootFolder = Path.of("test");
+    private final Path sourceFolder = Path.of("source");
+    private Retry retry = new Retry(reader);
+
+    @BeforeEach
+    void setup() {
+        retry = new Retry(reader);
+    }
 
     @Test
     void shouldCopyFilesFromSourceToDestination() throws IOException {
@@ -68,7 +76,7 @@ class TransferPicturesTest {
     }
 
     @Test
-    void shouldNotCopyFiles_whenBackupFoldersEmpty() throws IOException {
+    void shouldNotCopyFiles_whenBackupFoldersEmpty() {
         TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier, retry);
         List<BackupFolder> backupFolders = emptyList();
 
@@ -77,5 +85,18 @@ class TransferPicturesTest {
         verifyNoInteractions(ftpAccessor);
         verifyNoInteractions(imageModifier);
         verifyNoInteractions(retry);
+    }
+
+    @Test
+    void shouldRetry_whenExceptionThrown() throws IOException {
+        doThrow(IOException.class).when(ftpAccessor).copyFilesFrom(any(), any(), eq(lastBackupTime));
+        when(reader.readLine()).thenReturn("Y").thenReturn("N");
+        TransferPictures testee = new TransferPictures(ftpAccessor, fileAccessor, destinationRootFolder, imageModifier, retry);
+        List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
+
+        assertThrows(RuntimeException.class, () -> testee.copy(backupFolders, lastBackupTime, false));
+
+        verify(ftpAccessor, times(2)).copyFilesFrom(sourceFolder, destinationRootFolder.resolve("subFolder"), lastBackupTime);
+        verifyNoInteractions(imageModifier);
     }
 }
