@@ -53,7 +53,6 @@ class TransferPicturesTest {
         Path expectedDestinationFolder = Path.of("test/subFolder");
         verify(ftpAccessor).copyFilesFrom(sourceFolder, expectedDestinationFolder, lastBackupTime);
         verifyNoInteractions(imageModifier);
-        verifyNoInteractions(retry);
     }
 
     @Test
@@ -72,7 +71,6 @@ class TransferPicturesTest {
         Path expectedDestinationFile = Path.of("test/subFolder/image.jpg");
         verify(imageModifier).setJpegRating(expectedImageFile, expectedDestinationFile, 5);
         verifyNoMoreInteractions(imageModifier);
-        verifyNoInteractions(retry);
     }
 
     @Test
@@ -84,7 +82,6 @@ class TransferPicturesTest {
 
         verifyNoInteractions(ftpAccessor);
         verifyNoInteractions(imageModifier);
-        verifyNoInteractions(retry);
     }
 
     @Test

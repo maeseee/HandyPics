@@ -7,16 +7,46 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class FtpAccessorTest {
 
     @Mock
     private FtpClient ftpClient;
+
+    @Test
+    void shouldCopyFile_whenWanted() throws IOException {
+        Path sourceFile = Path.of("test/image.jpg");
+        Path destinationFolder = Path.of("test");
+        FtpAccessor testee = new FtpAccessor(ftpClient);
+
+        testee.copyFileFrom(sourceFile, destinationFolder);
+
+        verify(ftpClient).downloadFile(sourceFile, Path.of("test/image.jpg"));
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    void shouldIgnoreFile_whenAlreadyThere() throws IOException {
+        Path sourceFile = Path.of("test/image.jpg");
+        Path destinationFolder = Path.of("test");
+        Files.createFile(sourceFile);
+        FtpAccessor testee = new FtpAccessor(ftpClient);
+
+        testee.copyFileFrom(sourceFile, destinationFolder);
+
+        verifyNoInteractions(ftpClient);
+        boolean emptyFileDeleted = sourceFile.toFile().delete();
+        boolean deleted = destinationFolder.toFile().delete();
+    }
 
     @Test
     void shouldIgnoreFolder_whenNameContainsPrivate() {
