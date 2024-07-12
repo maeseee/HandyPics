@@ -1,6 +1,5 @@
 package org.ase.transfer;
 
-import com.google.common.io.Files;
 import lombok.AllArgsConstructor;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
@@ -60,12 +59,7 @@ public class TransferPictures {
             imageModifier.setJpegRating(inputFile, destinationFile, 5);
         } catch (ImageReadException | ImageWriteException | UnsupportedFileTypeException e) {
             System.err.println(inputFile.getFileName() + " could not be starred: " + e.getMessage());
-            try {
-                Files.move(inputFile.toFile(), destinationFile.toFile());
-            } catch (IOException ex) {
-                System.err.println(inputFile.getFileName() + " could not be copied: " + e.getMessage());
-                throw new RuntimeException(ex);
-            }
+            fileAccessor.moveFileIfNotExists(inputFile, destinationFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

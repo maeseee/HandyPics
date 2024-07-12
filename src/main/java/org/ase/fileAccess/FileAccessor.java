@@ -50,4 +50,16 @@ public class FileAccessor {
             throw new RuntimeException(e);
         }
     }
+
+    public void moveFileIfNotExists(Path inputFile, Path destinationFile) {
+        if (Files.exists(destinationFile)) {
+            return;
+        }
+        try {
+            Files.move(inputFile, destinationFile);
+        } catch (IOException e) {
+            System.err.println(inputFile.getFileName() + " could not be moved: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 }
