@@ -16,6 +16,7 @@ public class FtpAccessor {
     private final FtpClient ftpClient;
 
     public void copyFilesFrom(Path sourceFolder, Path destinationFolder, LocalDateTime lastBackupTime) throws IOException {
+        System.out.println("Copy files from " + sourceFolder);
         Collection<FileProperty> files = ftpClient.listFiles(sourceFolder);
         List<Path> filteredList = files.stream()
                 .filter(fileProperty -> isModificationDateNewer(lastBackupTime, fileProperty.modificationDate()))
