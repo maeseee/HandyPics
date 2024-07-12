@@ -20,7 +20,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class AndroidFtpClient implements FtpClient {
+public class ApacheFtpClient implements FtpClient {
 
     private final static int PORT = 2221;
     private final static String USERNAME = "android";
@@ -29,12 +29,12 @@ public class AndroidFtpClient implements FtpClient {
     private final FTPClient ftp = new FTPClient();
     private final String server;
 
-    public AndroidFtpClient(String server) {
+    public ApacheFtpClient(String server) {
         this(server, null);
     }
 
     @VisibleForTesting
-    AndroidFtpClient(String server, PrintCommandListener printCommandListener) {
+    ApacheFtpClient(String server, PrintCommandListener printCommandListener) {
         this.server = server;
         if (printCommandListener != null) {
             ftp.addProtocolCommandListener(printCommandListener);
@@ -70,7 +70,7 @@ public class AndroidFtpClient implements FtpClient {
     @Override
     public void putFileToPath(Path sourceFile, Path destinationFile) throws IOException {
         open();
-        ftp.storeFile(toLinuxPath(destinationFile), new FileInputStream(sourceFile.toFile()));
+        ftp.storeFile("/" + toLinuxPath(destinationFile), new FileInputStream(sourceFile.toFile()));
         close();
     }
 

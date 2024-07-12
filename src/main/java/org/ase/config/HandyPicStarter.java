@@ -54,7 +54,7 @@ public class HandyPicStarter {
         try (Stream<Path> stream = Files.list(destinationWorkPath)) {
             boolean hasContent = stream.findAny().isPresent();
             if (hasContent) {
-                System.out.println("Destination folder is NOT empty! Press any key to continue");
+                System.out.println("Destination folder is NOT empty! Press any key to continue...");
                 anyUserInput();
             }
         } catch (IOException e) {

@@ -26,7 +26,7 @@ class ApacheFtpClientTest {
 
     private FakeFtpServer fakeFtpServer;
 
-    private AndroidFtpClient ftpClient;
+    private ApacheFtpClient ftpClient;
 
     @BeforeEach
     public void setup() {
@@ -43,7 +43,7 @@ class ApacheFtpClientTest {
 
         fakeFtpServer.start();
 
-        ftpClient = new AndroidFtpClient("localhost", new PrintCommandListener(new PrintWriter(System.out)));
+        ftpClient = new ApacheFtpClient("localhost", new PrintCommandListener(new PrintWriter(System.out)));
     }
 
     @AfterEach

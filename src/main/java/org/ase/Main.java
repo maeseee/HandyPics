@@ -3,7 +3,7 @@ package org.ase;
 import org.ase.config.Config;
 import org.ase.config.HandyPicStarter;
 import org.ase.fileAccess.FileAccessor;
-import org.ase.ftp.AndroidFtpClient;
+import org.ase.ftp.ApacheFtpClient;
 import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
 import org.ase.image.ImageModifier;
@@ -32,7 +32,7 @@ public class Main {
     }
 
     private static FtpAccessor createFtpAccessor(String ipAddress) {
-        AndroidFtpClient ftpClient = new AndroidFtpClient(ipAddress);
+        ApacheFtpClient ftpClient = new ApacheFtpClient(ipAddress);
         return new FtpAccessor(ftpClient);
     }
 }
