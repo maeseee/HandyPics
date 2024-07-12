@@ -47,7 +47,8 @@ public class FtpAccessor {
     }
 
     public void copyFileFrom(Path sourceFile, Path destinationFolder) throws IOException {
-        Path destinationFile = destinationFolder.resolve(sourceFile.getFileName());
+        String destination = destinationFolder.toString().replaceFirst("Favorite", "");
+        Path destinationFile = Path.of(destination).resolve(sourceFile.getFileName());
         if (!Files.exists(destinationFile)) {
             ftpClient.downloadFile(sourceFile, destinationFile);
         }

@@ -1,5 +1,6 @@
 package org.ase.ftp;
 
+import org.ase.fileAccess.FileAccessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,9 +37,28 @@ class FtpAccessorTest {
     @Test
     @SuppressWarnings("unused")
     void shouldIgnoreFile_whenAlreadyThere() throws IOException {
+        FileAccessor fileAccessor = new FileAccessor();
+        fileAccessor.createDirectoryIfNotExists(Path.of("test"));
         Path sourceFile = Path.of("test/image.jpg");
-        Path destinationFolder = Path.of("test");
         Files.createFile(sourceFile);
+        Path destinationFolder = Path.of("test");
+        FtpAccessor testee = new FtpAccessor(ftpClient);
+
+        testee.copyFileFrom(sourceFile, destinationFolder);
+
+        verifyNoInteractions(ftpClient);
+        boolean emptyFileDeleted = sourceFile.toFile().delete();
+        boolean deleted = destinationFolder.toFile().delete();
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    void shouldIgnoreFavoriteFile_whenAlreadyInThere() throws IOException {
+        FileAccessor fileAccessor = new FileAccessor();
+        fileAccessor.createDirectoryIfNotExists(Path.of("test"));
+        Path sourceFile = Path.of("test/image.jpg");
+        fileAccessor.createIfNotExists(sourceFile);
+        Path destinationFolder = Path.of("testFavorite");
         FtpAccessor testee = new FtpAccessor(ftpClient);
 
         testee.copyFileFrom(sourceFile, destinationFolder);
