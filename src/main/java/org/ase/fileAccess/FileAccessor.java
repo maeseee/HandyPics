@@ -40,17 +40,6 @@ public class FileAccessor {
         }
     }
 
-    public void createIfNotExists(Path fileName) {
-        if (Files.exists(fileName)) {
-            return;
-        }
-        try {
-            Files.createFile(fileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void moveFileIfNotExists(Path inputFile, Path destinationFile) {
         if (Files.exists(destinationFile)) {
             return;

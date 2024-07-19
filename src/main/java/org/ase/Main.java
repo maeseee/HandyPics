@@ -21,15 +21,19 @@ public class Main {
         HandyPicStarter handyPicStarter = new HandyPicStarter(bufferedReader);
         Config config = handyPicStarter.readConfig();
 
+        HandyPics handyPics = getHandyPics(bufferedReader, config);
+        handyPics.transferImagesFromHandy();
+
+        System.out.println("ALL FINISHED SUCCESSFULLY :-)");
+    }
+
+    private static HandyPics getHandyPics(BufferedReader bufferedReader, Config config) {
         ApacheFtpClient ftpClient = new ApacheFtpClient(config.ipAddress());
         FileAccessor fileAccessor = new FileAccessor();
         TransferFile transferFile = new TransferFile(ftpClient, fileAccessor, new Retry(bufferedReader));
         TransferFolder transferFolder = new TransferFolder(transferFile, new Retry(bufferedReader));
         Transfer transfer = new Transfer(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
         LastBackup lastBackup = new LastBackup(ftpClient, config.destinationRootFolder());
-        HandyPics handyPics = new HandyPics(transfer, lastBackup);
-        handyPics.transferImagesFromHandy();
-
-        System.out.println("ALL FINISHED SUCCESSFULLY :-)");
+        return new HandyPics(transfer, lastBackup);
     }
 }

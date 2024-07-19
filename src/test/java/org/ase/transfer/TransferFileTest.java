@@ -44,7 +44,7 @@ class TransferFileTest {
     @Test
     void shouldTransferFiles_whenWanted() throws IOException {
         Path sourceFile = Path.of("test/image.jpg");
-        Path destinationFolder = Path.of("test");
+        Path destinationFolder = Path.of("ftpFolder");
         FileProperty fileProperty = new FileProperty(sourceFile, LocalDateTime.now());
         Collection<FileProperty> fileProperties = List.of(fileProperty);
         when(ftpClient.listFiles(any())).thenReturn(fileProperties);
@@ -52,7 +52,7 @@ class TransferFileTest {
 
         testee.transfer(sourceFile, destinationFolder, lastBackupTime);
 
-        verify(ftpClient).downloadFile(sourceFile, Path.of("test/image.jpg"));
+        verify(ftpClient).downloadFile(sourceFile, Path.of("ftpFolder/image.jpg"));
     }
 
     @Test
