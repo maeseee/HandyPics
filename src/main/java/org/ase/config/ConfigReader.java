@@ -47,8 +47,15 @@ public class ConfigReader {
             if (isValidIpAddress(inputString)) {
                 return Optional.of(inputString);
             }
+            int numberInSubnet = Integer.parseInt(inputString);
+            String ipAddress = "192.168.50." + numberInSubnet;
+            if (isValidIpAddress(ipAddress)) {
+                return Optional.of(ipAddress);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not read ip address");
+        } catch (NumberFormatException e) {
+            return Optional.empty();
         }
         return Optional.empty();
     }
