@@ -9,7 +9,7 @@ public interface FtpClient {
 
     Collection<Path> listDirectories(Path path) throws IOException;
 
-    void putFileToPath(Path sourceFile, Path destinationFile) throws IOException;
+    void uploadFile(Path sourceFile, Path destinationFile) throws IOException;
 
     void downloadFile(Path sourceFile, Path destinationFolder) throws IOException;
 }

@@ -4,7 +4,6 @@ import org.ase.config.Config;
 import org.ase.config.HandyPicStarter;
 import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.ApacheFtpClient;
-import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
 import org.ase.image.ImageModifier;
 import org.ase.transfer.Retry;
@@ -22,20 +21,15 @@ public class Main {
         HandyPicStarter handyPicStarter = new HandyPicStarter(bufferedReader);
         Config config = handyPicStarter.readConfig();
 
-        FtpAccessor ftpAccessor = createFtpAccessor(config.ipAddress());
+        ApacheFtpClient ftpClient = new ApacheFtpClient(config.ipAddress());
         FileAccessor fileAccessor = new FileAccessor();
-        TransferFile transferFile = new TransferFile(ftpAccessor, fileAccessor, new Retry(bufferedReader));
+        TransferFile transferFile = new TransferFile(ftpClient, fileAccessor, new Retry(bufferedReader));
         TransferFolder transferFolder = new TransferFolder(transferFile, new Retry(bufferedReader));
         TransferPictures transferPictures = new TransferPictures(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
-        LastBackup lastBackup = new LastBackup(ftpAccessor, config.destinationRootFolder());
+        LastBackup lastBackup = new LastBackup(ftpClient, config.destinationRootFolder());
         HandyPics handyPics = new HandyPics(transferPictures, lastBackup);
         handyPics.transferImagesFromHandy();
 
         System.out.println("ALL FINISHED SUCCESSFULLY :-)");
-    }
-
-    private static FtpAccessor createFtpAccessor(String ipAddress) {
-        ApacheFtpClient ftpClient = new ApacheFtpClient(ipAddress);
-        return new FtpAccessor(ftpClient);
     }
 }

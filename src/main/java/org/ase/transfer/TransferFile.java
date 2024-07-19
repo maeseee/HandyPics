@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.AllArgsConstructor;
 import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.FileProperty;
-import org.ase.ftp.FtpAccessor;
+import org.ase.ftp.FtpClient;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TransferFile {
 
-    private final FtpAccessor ftpAccessor;
+    private final FtpClient ftpClient;
     private final FileAccessor fileAccessor;
     private final Retry retry;
 
@@ -32,12 +32,12 @@ public class TransferFile {
     }
 
     public Collection<Path> listDirectories(Path folder) throws IOException {
-        return ftpAccessor.getListDirectories(folder);
+        return ftpClient.listDirectories(folder);
     }
 
     private void transferFiles(Path sourceFolder, Path destinationFolder, LocalDateTime lastBackupTime) throws IOException {
         System.out.println("Copy files from " + sourceFolder);
-        Collection<FileProperty> files = ftpAccessor.listFiles(sourceFolder);
+        Collection<FileProperty> files = ftpClient.listFiles(sourceFolder);
         List<Path> filteredList = filterFiles(destinationFolder, lastBackupTime, files);
 
         int processedFiles = 0;
@@ -51,7 +51,7 @@ public class TransferFile {
     private void copyFileFrom(Path sourceFile, Path destinationFolder) throws IOException {
         Path destinationFile = destinationFolder.resolve(sourceFile.getFileName());
         if (!fileExistsOnDestination(destinationFile)) {
-            ftpAccessor.downloadFile(sourceFile, destinationFile);
+            ftpClient.downloadFile(sourceFile, destinationFile);
         }
     }
 

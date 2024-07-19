@@ -1,8 +1,9 @@
 package org.ase.history;
 
-import org.ase.ftp.FtpAccessor;
+import org.ase.ftp.FtpClient;
 
 import java.io.*;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -10,36 +11,38 @@ import java.time.ZoneOffset;
 
 public class LastBackup {
 
-    private final static Path LAST_BACKUP_FILE_PATH = Path.of("DCIM/LastBackup.txt");
+    private final static Path LAST_BACKUP_FILE = Path.of("DCIM/LastBackup.txt");
 
-    private final FtpAccessor ftpAccessor;
-    private final Path destinationWorkPath;
+    private final FtpClient ftpClient;
+    private final Path destinationWorkFolder;
 
-    public LastBackup(FtpAccessor ftpAccessor, Path destinationWorkPath) {
-        this.ftpAccessor = ftpAccessor;
-        this.destinationWorkPath = destinationWorkPath;
+    public LastBackup(FtpClient ftpClient, Path destinationWorkFolder) {
+        this.ftpClient = ftpClient;
+        this.destinationWorkFolder = destinationWorkFolder;
     }
 
     public void loadLastBackup() {
         try {
-            Path destinationLastBackupFile = destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName());
+            Path destinationLastBackupFile = destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName());
             if (!Files.exists(destinationLastBackupFile)) {
-                ftpAccessor.downloadFile(LAST_BACKUP_FILE_PATH, destinationLastBackupFile);
+                ftpClient.downloadFile(LAST_BACKUP_FILE, destinationLastBackupFile);
             }
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException("Access to the ftp has been denied!\n" + e);
         } catch (IOException e) {
-            throw new RuntimeException("Could not load the file with the last backup time: " + e.getMessage());
+            throw new RuntimeException("Could not load the file with the last backup time:\n" + e);
         }
     }
 
     public LocalDateTime readLastBackupTimeFromFile() {
-        Path lastBackupFilePath = destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName());
+        Path lastBackupFilePath = destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName());
         if (!Files.exists(lastBackupFilePath)) {
             return LocalDateTime.of(1970, 1, 1, 0, 0);
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName()).toString()))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName()).toString()))) {
             String firstLine = br.readLine();
             if (firstLine == null) {
-                throw new RuntimeException("Could not read the file with the last backup time: " + LAST_BACKUP_FILE_PATH.getFileName());
+                throw new RuntimeException("Could not read the file with the last backup time: " + LAST_BACKUP_FILE.getFileName());
             }
             double epochSeconds = Double.parseDouble(firstLine.trim());
             return LocalDateTime.ofEpochSecond((long) epochSeconds, 0, ZoneOffset.UTC);
@@ -51,7 +54,7 @@ public class LastBackup {
     }
 
     public Path createFileFromNow() {
-        Path nowPath = destinationWorkPath.resolve("Now.txt");
+        Path nowPath = destinationWorkFolder.resolve("Now.txt");
         File nowFile = nowPath.toFile();
         try (FileWriter fileWriter = new FileWriter(nowFile, true)) {
             fileWriter.write(getDateTimeString());
@@ -63,7 +66,7 @@ public class LastBackup {
 
     public void storeNowFile(Path nowFile) {
         try {
-            ftpAccessor.storeFileTo(nowFile, LAST_BACKUP_FILE_PATH);
+            ftpClient.uploadFile(nowFile, LAST_BACKUP_FILE);
         } catch (IOException e) {
             throw new RuntimeException("Could not update the file with the last backup time: " + e.getMessage());
         }

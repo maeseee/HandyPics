@@ -97,7 +97,7 @@ class ApacheFtpClientTest {
         boolean created = sourceFile.toFile().createNewFile();
         Path destinationFile = Path.of("data/buz.txt");
 
-        ftpClient.putFileToPath(sourceFile, destinationFile);
+        ftpClient.uploadFile(sourceFile, destinationFile);
 
         assertThat(fakeFtpServer.getFileSystem().exists("/data/buz.txt")).isTrue();
         sourceFile.toFile().deleteOnExit();

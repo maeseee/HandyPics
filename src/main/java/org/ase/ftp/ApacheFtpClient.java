@@ -68,9 +68,10 @@ public class ApacheFtpClient implements FtpClient {
     }
 
     @Override
-    public void putFileToPath(Path sourceFile, Path destinationFile) throws IOException {
+    public void uploadFile(Path sourceFile, Path destinationFile) throws IOException {
         String destinationFileString = "/" + toLinuxPath(destinationFile);
         open();
+        ftp.deleteFile(destinationFileString);
         ftp.storeFile(destinationFileString, new FileInputStream(sourceFile.toFile()));
         close();
     }

@@ -2,7 +2,7 @@ package org.ase.transfer;
 
 import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.FileProperty;
-import org.ase.ftp.FtpAccessor;
+import org.ase.ftp.FtpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TransferFileTest {
     @Mock
-    private FtpAccessor ftpAccessor;
+    private FtpClient ftpClient;
     @Mock
     private FileAccessor fileAccessor;
     @Mock
@@ -47,17 +47,17 @@ class TransferFileTest {
         Path destinationFolder = Path.of("test");
         FileProperty fileProperty = new FileProperty(sourceFile, LocalDateTime.now());
         Collection<FileProperty> fileProperties = List.of(fileProperty);
-        when(ftpAccessor.listFiles(any())).thenReturn(fileProperties);
-        TransferFile testee = new TransferFile(ftpAccessor, fileAccessor, retry);
+        when(ftpClient.listFiles(any())).thenReturn(fileProperties);
+        TransferFile testee = new TransferFile(ftpClient, fileAccessor, retry);
 
         testee.transfer(sourceFile, destinationFolder, lastBackupTime);
 
-        verify(ftpAccessor).downloadFile(sourceFile, Path.of("test/image.jpg"));
+        verify(ftpClient).downloadFile(sourceFile, Path.of("test/image.jpg"));
     }
 
     @Test
     void shouldIgnoreFile_whenNameContainsTrash() {
-        TransferFile testee = new TransferFile(ftpAccessor, fileAccessor, retry);
+        TransferFile testee = new TransferFile(ftpClient, fileAccessor, retry);
 
         boolean notIgnored = testee.isNotInFileIgnoreList(Path.of("ThisIsATrashFile.txt"));
 
@@ -72,7 +72,7 @@ class TransferFileTest {
             "jgp.bla, false"
     })
     void shouldFilterFile_whenNotAnImageOrVideo(Path path, boolean imageOrVideo) {
-        TransferFile testee = new TransferFile(ftpAccessor, fileAccessor, retry);
+        TransferFile testee = new TransferFile(ftpClient, fileAccessor, retry);
 
         boolean imageOrVideoFile = testee.isImageOrVideoFile(path);
 
@@ -86,7 +86,7 @@ class TransferFileTest {
     @Test
     void shouldIgnoreFile_whenAlreadyOnDestination() {
         when(fileAccessor.fileExists(any())).thenReturn(true);
-        TransferFile testee = new TransferFile(ftpAccessor, fileAccessor, retry);
+        TransferFile testee = new TransferFile(ftpClient, fileAccessor, retry);
 
         boolean ignored = testee.fileExistsOnDestination(Path.of("File.txt"));
 
@@ -97,7 +97,7 @@ class TransferFileTest {
     void shouldIgnoreFavoritFile_whenAlreadyOnDestination() {
         when(fileAccessor.fileExists(any())).thenReturn(false);
         when(fileAccessor.fileExists(Path.of("File.txt"))).thenReturn(true);
-        TransferFile testee = new TransferFile(ftpAccessor, fileAccessor, retry);
+        TransferFile testee = new TransferFile(ftpClient, fileAccessor, retry);
 
         boolean ignored = testee.fileExistsOnDestination(Path.of("FileFavorite.txt"));
 
