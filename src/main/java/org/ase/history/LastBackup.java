@@ -60,7 +60,7 @@ public class LastBackup {
 
     public void storeNowFile(Path nowFile) {
         try {
-            ftpAccessor.storeFileTo(LAST_BACKUP_FILE_PATH, nowFile);
+            ftpAccessor.storeFileTo(LAST_BACKUP_FILE_PATH, nowFile); // Does not work
         } catch (IOException e) {
             throw new RuntimeException("Could not read the backup time file: " + e.getMessage());
         }

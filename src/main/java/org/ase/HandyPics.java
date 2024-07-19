@@ -28,15 +28,13 @@ public class HandyPics {
     private final TransferPictures transferPictures;
     private final LastBackup lastBackup;
 
-    private LocalDateTime lastBackupTime;
-
     public HandyPics(TransferPictures transferPictures, LastBackup lastBackup) {
         this.transferPictures = transferPictures;
         this.lastBackup = lastBackup;
     }
 
     public void transferImagesFromHandy() {
-        loadLastBackupTime();
+        LocalDateTime lastBackupTime = loadLastBackupTime();
 
         transferPictures.copy(FAVORIT_BACKUP_FOLDERS, lastBackupTime, true);
         transferPictures.copy(BACKUP_FOLDERS, lastBackupTime, false);
@@ -44,9 +42,11 @@ public class HandyPics {
         updateLastBackupTime();
     }
 
-    private void loadLastBackupTime() {
+    private LocalDateTime loadLastBackupTime() {
         lastBackup.loadLastBackup();
-        lastBackupTime = lastBackup.readLastBackupTimeFromFile();
+        LocalDateTime lastBackupTime = lastBackup.readLastBackupTimeFromFile();
+        System.out.println("Last backup time: " + lastBackupTime);
+        return lastBackupTime;
     }
 
     private void updateLastBackupTime() {
