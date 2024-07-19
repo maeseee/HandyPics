@@ -15,21 +15,32 @@ public class Retry {
         try {
             method.run();
         } catch (Exception e) {
-            if (askForRetry()) {
-                callWithRetry(method);
-            } else {
-                throw new RuntimeException(e);
+            RetryCommand cmd = askForRetryCommand();
+            switch (cmd) {
+                case EXIT -> throw new RuntimeException(e);
+                case RETRY -> callWithRetry(method);
+                case IGNORE -> continueToTheNext();
             }
         }
     }
 
-    private boolean askForRetry() {
-        System.out.println("The programm ended with an exception. Should a retry be done now? [Y/N]");
+    private RetryCommand askForRetryCommand() {
+        System.err.println("The process had an exception. What should be done? [EXIT, RETRY, IGNORE]");
+        String inputString;
         try {
-            String inputString = reader.readLine();
-            return inputString.toLowerCase().startsWith("y");
+            inputString = reader.readLine();
         } catch (IOException e) {
             throw new RuntimeException("Could not read ip address");
         }
+        if (inputString.toLowerCase().startsWith("e")) {
+            return RetryCommand.EXIT;
+        }
+        if (inputString.toLowerCase().startsWith("i")) {
+            return RetryCommand.IGNORE;
+        }
+        return RetryCommand.RETRY;
+    }
+
+    private void continueToTheNext() {
     }
 }

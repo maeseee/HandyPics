@@ -62,4 +62,8 @@ public class FileAccessor {
             throw new RuntimeException(e);
         }
     }
+
+    public boolean fileExists(Path file) {
+        return Files.exists(file);
+    }
 }

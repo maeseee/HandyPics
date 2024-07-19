@@ -1,6 +1,5 @@
 package org.ase.transfer;
 
-import org.ase.ftp.FtpAccessor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,15 +11,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransferFolderTest {
     @Mock
-    private FtpAccessor ftpAccessor;
+    private TransferFile transferFile;
     @Mock
     private BufferedReader reader;
 
@@ -36,21 +35,39 @@ class TransferFolderTest {
 
     @Test
     void shouldCopyFolderFromSourceToDestination() throws IOException {
-        TransferFolder testee = new TransferFolder(ftpAccessor, retry);
+        TransferFolder testee = new TransferFolder(transferFile, retry);
 
         testee.transfer(sourceFolder, destinationFolder, lastBackupTime);
 
-        verify(ftpAccessor).copyFilesFrom(sourceFolder, destinationFolder, lastBackupTime);
+        verify(transferFile).transfer(sourceFolder, destinationFolder, lastBackupTime);
     }
 
     @Test
     void shouldRetry_whenExceptionThrown() throws IOException {
-        doThrow(IOException.class).when(ftpAccessor).copyFilesFrom(any(), any(), eq(lastBackupTime));
-        when(reader.readLine()).thenReturn("Y").thenReturn("N");
-        TransferFolder testee = new TransferFolder(ftpAccessor, retry);
+        doThrow(IOException.class).when(transferFile).listDirectories(any());
+        when(reader.readLine()).thenReturn("R").thenReturn("E");
+        TransferFolder testee = new TransferFolder(transferFile, retry);
 
         assertThrows(RuntimeException.class, () -> testee.transfer(sourceFolder, destinationFolder, lastBackupTime));
 
-        verify(ftpAccessor, times(2)).copyFilesFrom(sourceFolder, destinationFolder, lastBackupTime);
+        verify(transferFile, times(2)).listDirectories(sourceFolder);
+    }
+
+    @Test
+    void shouldIgnoreFolder_whenNameContainsPrivate() {
+        TransferFolder testee = new TransferFolder(transferFile, retry);
+
+        boolean notIgnored = testee.isNotInDirectoryIgnoreList(Path.of("ThisIsAPrivateFolder"));
+
+        assertFalse(notIgnored);
+    }
+
+    @Test
+    void shouldIgnoreFolder_whenFolderIsHidden() {
+        TransferFolder testee = new TransferFolder(transferFile, retry);
+
+        boolean notIgnored = testee.isNotHiddenDirectory(Path.of(".ThisIsAHiddenFolder"));
+
+        assertFalse(notIgnored);
     }
 }

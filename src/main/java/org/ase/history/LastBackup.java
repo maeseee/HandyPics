@@ -22,7 +22,10 @@ public class LastBackup {
 
     public void loadLastBackup() {
         try {
-            ftpAccessor.copyFileFrom(LAST_BACKUP_FILE_PATH, destinationWorkPath);
+            Path destinationLastBackupFile = destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName());
+            if (!Files.exists(destinationLastBackupFile)) {
+                ftpAccessor.downloadFile(LAST_BACKUP_FILE_PATH, destinationLastBackupFile);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Could not load the file with the last backup time: " + e.getMessage());
         }
