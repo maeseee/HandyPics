@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
-public class TransferPictures {
+public class Transfer {
 
     private final TransferFolder transferFolder;
     private final FileAccessor fileAccessor;
     private final Path destinationRootFolder;
     private final ImageModifier imageModifier;
 
-    public void copy(List<BackupFolder> backupFolders, LocalDateTime lastBackupTime, boolean isFavorite) {
+    public void backupPicturesInFolders(List<BackupFolder> backupFolders, LocalDateTime lastBackupTime, boolean isFavorite) {
         fileAccessor.createDirectoryIfNotExists(destinationRootFolder);
         backupFolders.forEach(backupFolder -> copyFolder(backupFolder, lastBackupTime, isFavorite));
     }

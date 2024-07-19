@@ -42,7 +42,7 @@ class TransferFileTest {
     }
 
     @Test
-    void shouldCopyFile_whenWanted() throws IOException {
+    void shouldTransferFiles_whenWanted() throws IOException {
         Path sourceFile = Path.of("test/image.jpg");
         Path destinationFolder = Path.of("test");
         FileProperty fileProperty = new FileProperty(sourceFile, LocalDateTime.now());

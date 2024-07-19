@@ -34,7 +34,7 @@ class TransferFolderTest {
     }
 
     @Test
-    void shouldCopyFolderFromSourceToDestination() throws IOException {
+    void shouldTransferFoldersFromSourceToDestination() {
         TransferFolder testee = new TransferFolder(transferFile, retry);
 
         testee.transfer(sourceFolder, destinationFolder, lastBackupTime);

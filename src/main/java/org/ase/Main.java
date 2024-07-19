@@ -7,9 +7,9 @@ import org.ase.ftp.ApacheFtpClient;
 import org.ase.history.LastBackup;
 import org.ase.image.ImageModifier;
 import org.ase.transfer.Retry;
+import org.ase.transfer.Transfer;
 import org.ase.transfer.TransferFile;
 import org.ase.transfer.TransferFolder;
-import org.ase.transfer.TransferPictures;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,9 +25,9 @@ public class Main {
         FileAccessor fileAccessor = new FileAccessor();
         TransferFile transferFile = new TransferFile(ftpClient, fileAccessor, new Retry(bufferedReader));
         TransferFolder transferFolder = new TransferFolder(transferFile, new Retry(bufferedReader));
-        TransferPictures transferPictures = new TransferPictures(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
+        Transfer transfer = new Transfer(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
         LastBackup lastBackup = new LastBackup(ftpClient, config.destinationRootFolder());
-        HandyPics handyPics = new HandyPics(transferPictures, lastBackup);
+        HandyPics handyPics = new HandyPics(transfer, lastBackup);
         handyPics.transferImagesFromHandy();
 
         System.out.println("ALL FINISHED SUCCESSFULLY :-)");

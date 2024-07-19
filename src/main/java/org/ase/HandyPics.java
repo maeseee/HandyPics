@@ -3,7 +3,7 @@ package org.ase;
 import com.google.common.collect.ImmutableList;
 import org.ase.history.LastBackup;
 import org.ase.transfer.BackupFolder;
-import org.ase.transfer.TransferPictures;
+import org.ase.transfer.Transfer;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -26,19 +26,19 @@ public class HandyPics {
             new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp")
     );
 
-    private final TransferPictures transferPictures;
+    private final Transfer transfer;
     private final LastBackup lastBackup;
 
-    public HandyPics(TransferPictures transferPictures, LastBackup lastBackup) {
-        this.transferPictures = transferPictures;
+    public HandyPics(Transfer transfer, LastBackup lastBackup) {
+        this.transfer = transfer;
         this.lastBackup = lastBackup;
     }
 
     public void transferImagesFromHandy() {
         LocalDateTime lastBackupTime = loadLastBackupTime();
 
-        transferPictures.copy(FAVORIT_BACKUP_FOLDERS, lastBackupTime, true);
-        transferPictures.copy(BACKUP_FOLDERS, lastBackupTime, false);
+        transfer.backupPicturesInFolders(FAVORIT_BACKUP_FOLDERS, lastBackupTime, true);
+        transfer.backupPicturesInFolders(BACKUP_FOLDERS, lastBackupTime, false);
 
         updateLastBackupTime();
     }

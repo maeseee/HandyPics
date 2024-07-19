@@ -19,7 +19,7 @@ import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TransferPicturesTest {
+class TransferTest {
     @Mock
     private TransferFolder transferFolder;
     @Mock
@@ -32,11 +32,11 @@ class TransferPicturesTest {
     private final Path sourceFolder = Path.of("source");
 
     @Test
-    void shouldCopyFolderFromSourceToDestination() throws IOException {
-        TransferPictures testee = new TransferPictures(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
+    void shouldBackupPicturesInFolders() {
+        Transfer testee = new Transfer(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
         List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
-        testee.copy(backupFolders, lastBackupTime, false);
+        testee.backupPicturesInFolders(backupFolders, lastBackupTime, false);
 
         Path expectedDestinationFolder = Path.of("test/subFolder");
         verify(transferFolder).transfer(sourceFolder, expectedDestinationFolder, lastBackupTime);
@@ -44,15 +44,15 @@ class TransferPicturesTest {
     }
 
     @Test
-    void shouldCopyFolderFromSourceToDestination_whenIsFavorit()
+    void shouldBackupPicturesInFoldersFromSourceToDestination_whenIsFavorit()
             throws IOException, ImageWriteException, UnsupportedFileTypeException, ImageReadException {
         Path temporaryDestinationFolder = Path.of("test/subFolderFavorite");
         List<Path> inputFiles = List.of(temporaryDestinationFolder.resolve("image.jpg"));
         when(fileAccessor.filesInDirectory(temporaryDestinationFolder)).thenReturn(inputFiles);
-        TransferPictures testee = new TransferPictures(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
+        Transfer testee = new Transfer(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
         List<BackupFolder> backupFolders = List.of(new BackupFolder(sourceFolder, "subFolder"));
 
-        testee.copy(backupFolders, lastBackupTime, true);
+        testee.backupPicturesInFolders(backupFolders, lastBackupTime, true);
 
         verify(transferFolder).transfer(sourceFolder, temporaryDestinationFolder, lastBackupTime);
         Path expectedImageFile = temporaryDestinationFolder.resolve("image.jpg");
@@ -62,11 +62,11 @@ class TransferPicturesTest {
     }
 
     @Test
-    void shouldNotCopyFiles_whenBackupFoldersEmpty() {
-        TransferPictures testee = new TransferPictures(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
+    void shouldNotBackupPicturesInFolders_whenEmpty() {
+        Transfer testee = new Transfer(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
         List<BackupFolder> backupFolders = emptyList();
 
-        testee.copy(backupFolders, lastBackupTime, false);
+        testee.backupPicturesInFolders(backupFolders, lastBackupTime, false);
 
         verifyNoInteractions(transferFolder);
         verifyNoInteractions(imageModifier);
