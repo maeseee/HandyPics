@@ -48,9 +48,8 @@ public class FtpAccessor {
     }
 
     public void copyFileFrom(Path sourceFile, Path destinationFolder) throws IOException {
-        String destination = destinationFolder.toString().replaceFirst("Favorite", "");
-        Path destinationFile = Path.of(destination).resolve(sourceFile.getFileName());
-        if (!Files.exists(destinationFile)) {
+        Path destinationFile = destinationFolder.resolve(sourceFile.getFileName());
+        if (!fileExistsOnDestination(destinationFile)) {
             ftpClient.downloadFile(sourceFile, destinationFile);
         }
     }
@@ -61,6 +60,15 @@ public class FtpAccessor {
 
     private boolean isModificationDateNewer(LocalDateTime lastBackupTime, LocalDateTime modificationDate) {
         return lastBackupTime.isBefore(modificationDate);
+    }
+
+    private boolean fileExistsOnDestination(Path destinationFile) {
+        if (Files.exists(destinationFile)) {
+            return true;
+        }
+        String finalDestinationFileString = destinationFile.toString().replaceFirst("Favorite", "");
+        Path finalDestinationFile = Path.of(finalDestinationFileString);
+        return Files.exists(finalDestinationFile);
     }
 
     @VisibleForTesting
