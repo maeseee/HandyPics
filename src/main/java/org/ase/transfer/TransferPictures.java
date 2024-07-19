@@ -35,7 +35,7 @@ public class TransferPictures {
             try {
                 ftpAccessor.copyFilesFrom(backupFolder.sourceFolder(), favoriteDestinationFolder, lastBackupTime);
             } catch (IOException e) {
-                System.err.println("ERROR: " + backupFolder.sourceFolder() + " -> " + favoriteDestinationFolder + "\n" + e.getMessage());
+                System.err.println("ERROR copying folder: " + backupFolder.sourceFolder() + " -> " + favoriteDestinationFolder + "\n" + e);
                 throw new RuntimeException(e);
             }
         });

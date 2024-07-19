@@ -24,7 +24,7 @@ public class LastBackup {
         try {
             ftpAccessor.copyFileFrom(LAST_BACKUP_FILE_PATH, destinationWorkPath);
         } catch (IOException e) {
-            throw new RuntimeException("Could not read the backup time file: " + e.getMessage());
+            throw new RuntimeException("Could not load the file with the last backup time: " + e.getMessage());
         }
     }
 
@@ -36,7 +36,7 @@ public class LastBackup {
         try (BufferedReader br = new BufferedReader(new FileReader(destinationWorkPath.resolve(LAST_BACKUP_FILE_PATH.getFileName()).toString()))) {
             String firstLine = br.readLine();
             if (firstLine == null) {
-                throw new RuntimeException("Could not read the backup time file: " + LAST_BACKUP_FILE_PATH.getFileName());
+                throw new RuntimeException("Could not read the file with the last backup time: " + LAST_BACKUP_FILE_PATH.getFileName());
             }
             double epochSeconds = Double.parseDouble(firstLine.trim());
             return LocalDateTime.ofEpochSecond((long) epochSeconds, 0, ZoneOffset.UTC);
@@ -62,7 +62,7 @@ public class LastBackup {
         try {
             ftpAccessor.storeFileTo(LAST_BACKUP_FILE_PATH, nowFile); // Does not work
         } catch (IOException e) {
-            throw new RuntimeException("Could not read the backup time file: " + e.getMessage());
+            throw new RuntimeException("Could not update the file with the last backup time: " + e.getMessage());
         }
     }
 

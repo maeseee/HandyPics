@@ -80,7 +80,7 @@ public class FtpAccessor {
 
     @VisibleForTesting
     boolean isNotInDirectoryIgnoreList(Path folder) {
-        List<String> ignoreList = List.of("sent", "private", "audio", "thumbnails");
+        List<String> ignoreList = List.of("sent", "private", "audio", "thumbnails", "whatsapp voice notes");
         String folderName = folder.getFileName().toString().toLowerCase().trim();
         return ignoreList.stream().noneMatch(folderName::contains);
     }
