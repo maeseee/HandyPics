@@ -95,11 +95,11 @@ class ApacheFtpClientTest {
     public void shouldHaveFileOnTheServer_whenUploadingIt() throws IOException {
         Path sourceFile = Path.of("myFile.txt");
         boolean created = sourceFile.toFile().createNewFile();
-        Path destinationFile = Path.of("/buz.txt");
+        Path destinationFile = Path.of("data/buz.txt");
 
         ftpClient.putFileToPath(sourceFile, destinationFile);
 
-        assertThat(fakeFtpServer.getFileSystem().exists("/buz.txt")).isTrue();
+        assertThat(fakeFtpServer.getFileSystem().exists("/data/buz.txt")).isTrue();
         sourceFile.toFile().deleteOnExit();
     }
 }
