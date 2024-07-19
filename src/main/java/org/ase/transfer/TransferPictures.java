@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.ase.fileAccess.FileAccessor;
-import org.ase.ftp.FtpAccessor;
 import org.ase.image.ImageModifier;
 import org.ase.image.UnsupportedFileTypeException;
 
@@ -16,11 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 public class TransferPictures {
 
-    private final FtpAccessor ftpAccessor;
+    private final TransferFolder transferFolder;
     private final FileAccessor fileAccessor;
     private final Path destinationRootFolder;
     private final ImageModifier imageModifier;
-    private final Retry retry;
 
     public void copy(List<BackupFolder> backupFolders, LocalDateTime lastBackupTime, boolean isFavorite) {
         fileAccessor.createDirectoryIfNotExists(destinationRootFolder);
@@ -31,14 +29,7 @@ public class TransferPictures {
         String favoriteSubFolderName = isFavorite ? backupFolder.destinationSubName() + "Favorite" : backupFolder.destinationSubName();
         Path favoriteDestinationFolder = createDestinationFolder(favoriteSubFolderName);
 
-        retry.callWithRetry(() -> {
-            try {
-                ftpAccessor.copyFilesFrom(backupFolder.sourceFolder(), favoriteDestinationFolder, lastBackupTime);
-            } catch (IOException e) {
-                System.err.println("ERROR copying folder: " + backupFolder.sourceFolder() + " -> " + favoriteDestinationFolder + "\n" + e);
-                throw new RuntimeException(e);
-            }
-        });
+        transferFolder.transfer(backupFolder.sourceFolder(), favoriteDestinationFolder, lastBackupTime);
 
         if (isFavorite) {
             Path destinationFolder = createDestinationFolder(backupFolder.destinationSubName());

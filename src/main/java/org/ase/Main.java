@@ -8,6 +8,7 @@ import org.ase.ftp.FtpAccessor;
 import org.ase.history.LastBackup;
 import org.ase.image.ImageModifier;
 import org.ase.transfer.Retry;
+import org.ase.transfer.TransferFolder;
 import org.ase.transfer.TransferPictures;
 
 import java.io.BufferedReader;
@@ -22,8 +23,8 @@ public class Main {
 
         FtpAccessor ftpAccessor = createFtpAccessor(config.ipAddress());
         FileAccessor fileAccessor = new FileAccessor();
-        TransferPictures transferPictures =
-                new TransferPictures(ftpAccessor, fileAccessor, config.destinationRootFolder(), new ImageModifier(), new Retry(bufferedReader));
+        TransferFolder transferFolder = new TransferFolder(ftpAccessor, new Retry(bufferedReader));
+        TransferPictures transferPictures = new TransferPictures(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
         LastBackup lastBackup = new LastBackup(ftpAccessor, config.destinationRootFolder());
         HandyPics handyPics = new HandyPics(transferPictures, lastBackup);
         handyPics.transferImagesFromHandy();
