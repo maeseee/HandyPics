@@ -7,6 +7,7 @@ import org.ase.transfer.TransferPictures;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class HandyPics {
@@ -45,7 +46,8 @@ public class HandyPics {
     private LocalDateTime loadLastBackupTime() {
         lastBackup.loadLastBackup();
         LocalDateTime lastBackupTime = lastBackup.readLastBackupTimeFromFile();
-        System.out.println("Last backup time: " + lastBackupTime);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        System.out.println("Last backup time: " + lastBackupTime.format(formatter));
         return lastBackupTime;
     }
 
