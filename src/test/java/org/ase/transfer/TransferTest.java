@@ -62,7 +62,7 @@ class TransferTest {
     }
 
     @Test
-    void shouldNotBackupPicturesInFolders_whenEmpty() {
+    void shouldNotBackupPicturesInFolders_whenListEmpty() {
         Transfer testee = new Transfer(transferFolder, fileAccessor, destinationRootFolder, imageModifier);
         List<BackupFolder> backupFolders = emptyList();
 

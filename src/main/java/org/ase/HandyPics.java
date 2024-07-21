@@ -21,7 +21,7 @@ public class HandyPics {
     private final List<BackupFolder> BACKUP_FOLDERS = ImmutableList.of(
             new BackupFolder(Path.of("DCIM"), "Camera"),
             new BackupFolder(Path.of("Pictures"), "Signal"), // Signal on Oppo
-            new BackupFolder(Path.of("Bluetooth"), "Bluetooth"), // Bluetooth on Oppo
+            new BackupFolder(Path.of("Download/Bluetooth"), "Bluetooth"), // Bluetooth on Oppo
             new BackupFolder(Path.of("MIUI/ShareMe"), "Bluetooth"), // Bluetooth on Xiaomi
             new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp")
     );
