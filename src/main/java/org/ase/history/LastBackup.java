@@ -1,29 +1,27 @@
 package org.ase.history;
 
+import lombok.AllArgsConstructor;
+import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.FtpClient;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+@AllArgsConstructor
 public class LastBackup {
 
     private final static Path LAST_BACKUP_FILE = Path.of("DCIM/LastBackup.txt");
 
     private final FtpClient ftpClient;
+    private final FileAccessor fileAccessor;
     private final Path destinationWorkFolder;
-
-    public LastBackup(FtpClient ftpClient, Path destinationWorkFolder) {
-        this.ftpClient = ftpClient;
-        this.destinationWorkFolder = destinationWorkFolder;
-    }
 
     public void loadLastBackup() {
         Path destinationLastBackupFile = destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName());
-        if (Files.exists(destinationLastBackupFile)) {
+        if (fileAccessor.fileExists(destinationLastBackupFile)) {
             System.out.println("Last backup file exists and will not be overwritten!");
             return;
         }
@@ -38,18 +36,13 @@ public class LastBackup {
 
     public LocalDateTime readLastBackupTimeFromFile() {
         Path lastBackupFilePath = destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName());
-        if (!Files.exists(lastBackupFilePath)) {
+        if (!fileAccessor.fileExists(lastBackupFilePath)) {
             return LocalDateTime.of(1970, 1, 1, 0, 0);
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName()).toString()))) {
-            String firstLine = br.readLine();
-            if (firstLine == null) {
-                throw new RuntimeException("Could not read the file with the last backup time: " + LAST_BACKUP_FILE.getFileName());
-            }
+        String firstLine = fileAccessor.readFirstLineInFile(destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName()));
+        try {
             double epochSeconds = Double.parseDouble(firstLine.trim());
             return LocalDateTime.ofEpochSecond((long) epochSeconds, 0, ZoneOffset.UTC);
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading the file: " + e.getMessage());
         } catch (NumberFormatException e) {
             throw new RuntimeException("Invalid format in the first line: " + e.getMessage());
         }
@@ -57,12 +50,7 @@ public class LastBackup {
 
     public Path createFileFromNow() {
         Path nowPath = destinationWorkFolder.resolve("Now.txt");
-        File nowFile = nowPath.toFile();
-        try (FileWriter fileWriter = new FileWriter(nowFile, true)) {
-            fileWriter.write(getDateTimeString());
-        } catch (IOException e) {
-            throw new RuntimeException("Error creating Now.txt file: " + e.getMessage());
-        }
+        fileAccessor.writeFile(nowPath, getDateTimeString());
         return nowPath;
     }
 

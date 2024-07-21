@@ -33,7 +33,7 @@ public class Main {
         TransferFile transferFile = new TransferFile(ftpClient, fileAccessor, new Retry(bufferedReader));
         TransferFolder transferFolder = new TransferFolder(transferFile, new Retry(bufferedReader));
         Transfer transfer = new Transfer(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
-        LastBackup lastBackup = new LastBackup(ftpClient, config.destinationRootFolder());
+        LastBackup lastBackup = new LastBackup(ftpClient, fileAccessor, config.destinationRootFolder());
         return new HandyPics(transfer, lastBackup);
     }
 }

@@ -2,6 +2,9 @@ package org.ase.fileAccess;
 
 import org.apache.commons.io.FileUtils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,5 +57,25 @@ public class FileAccessor {
 
     public boolean fileExists(Path file) {
         return Files.exists(file);
+    }
+
+    public String readFirstLineInFile(Path file) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file.toString()))) {
+            String firstLine = br.readLine();
+            if (firstLine == null) {
+                throw new RuntimeException("Could not read the file " + file);
+            }
+            return firstLine;
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading the file: " + e.getMessage());
+        }
+    }
+
+    public void writeFile(Path file, String content) {
+        try (FileWriter fileWriter = new FileWriter(file.toFile(), true)) {
+            fileWriter.write(content);
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating Now.txt file: " + e.getMessage());
+        }
     }
 }
