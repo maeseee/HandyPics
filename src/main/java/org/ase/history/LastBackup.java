@@ -22,11 +22,13 @@ public class LastBackup {
     }
 
     public void loadLastBackup() {
+        Path destinationLastBackupFile = destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName());
+        if (Files.exists(destinationLastBackupFile)) {
+            System.out.println("Last backup file exists and will not be overwritten!");
+            return;
+        }
         try {
-            Path destinationLastBackupFile = destinationWorkFolder.resolve(LAST_BACKUP_FILE.getFileName());
-            if (!Files.exists(destinationLastBackupFile)) {
-                ftpClient.downloadFile(LAST_BACKUP_FILE, destinationLastBackupFile);
-            }
+            ftpClient.downloadFile(LAST_BACKUP_FILE, destinationLastBackupFile);
         } catch (AccessDeniedException e) {
             throw new RuntimeException("Access to the ftp has been denied!\n" + e);
         } catch (IOException e) {
