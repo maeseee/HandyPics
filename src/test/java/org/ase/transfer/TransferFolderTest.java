@@ -53,6 +53,17 @@ class TransferFolderTest {
     }
 
     @Test
+    void shouldIgnoreFile_whenExceptionThrown() throws IOException {
+        doThrow(IOException.class).when(transferFile).listDirectories(any());
+        when(reader.readLine()).thenReturn("R").thenReturn("I");
+        TransferFolder testee = new TransferFolder(transferFile, retry);
+
+        testee.transfer(sourceFolder, destinationFolder, lastBackupTime);
+
+        verify(transferFile, times(2)).listDirectories(sourceFolder);
+    }
+
+    @Test
     void shouldIgnoreFolder_whenNameContainsPrivate() {
         TransferFolder testee = new TransferFolder(transferFile, retry);
 

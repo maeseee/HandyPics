@@ -30,7 +30,7 @@ public class Retry {
         try {
             inputString = reader.readLine();
         } catch (IOException e) {
-            throw new RuntimeException("Could not read ip address");
+            throw new RuntimeException(e);
         }
         if (inputString.toLowerCase().startsWith("e")) {
             return RetryCommand.EXIT;
