@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApacheFtpClientTest {
 
     private FakeFtpServer fakeFtpServer;
-
     private ApacheFtpClient ftpClient;
 
     @BeforeEach

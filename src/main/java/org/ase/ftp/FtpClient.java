@@ -12,4 +12,6 @@ public interface FtpClient {
     void uploadFile(Path sourceFile, Path destinationFile) throws IOException;
 
     void downloadFile(Path sourceFile, Path destinationFolder) throws IOException;
+
+    void checkConnection() throws IOException;
 }

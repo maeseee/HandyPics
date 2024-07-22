@@ -89,6 +89,12 @@ public class ApacheFtpClient implements FtpClient {
         close();
     }
 
+    @Override
+    public void checkConnection() throws IOException {
+        open();
+        close();
+    }
+
     private void open() throws IOException {
         ftp.connect(server, PORT);
         int reply = ftp.getReplyCode();

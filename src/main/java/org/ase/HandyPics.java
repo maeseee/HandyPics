@@ -1,10 +1,16 @@
 package org.ase;
 
 import com.google.common.collect.ImmutableList;
+import org.ase.config.Config;
+import org.ase.fileAccess.FileAccessor;
+import org.ase.ftp.ApacheFtpClient;
+import org.ase.ftp.FtpClient;
 import org.ase.history.LastBackup;
-import org.ase.transfer.BackupFolder;
-import org.ase.transfer.Transfer;
+import org.ase.image.ImageModifier;
+import org.ase.transfer.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,5 +60,24 @@ public class HandyPics {
     private void updateLastBackupTime() {
         Path nowFile = lastBackup.createFileFromNow();
         lastBackup.storeNowFile(nowFile);
+    }
+
+    static HandyPics getHandyPics(BufferedReader bufferedReader, Config config) {
+        FtpClient ftpClient = new ApacheFtpClient(config.ipAddress());
+        validateFtpAccess(ftpClient);
+        FileAccessor fileAccessor = new FileAccessor();
+        TransferFile transferFile = new TransferFile(ftpClient, fileAccessor, new Retry(bufferedReader));
+        TransferFolder transferFolder = new TransferFolder(transferFile, new Retry(bufferedReader));
+        Transfer transfer = new Transfer(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());
+        LastBackup lastBackup = new LastBackup(ftpClient, fileAccessor, config.destinationRootFolder());
+        return new HandyPics(transfer, lastBackup);
+    }
+
+    private static void validateFtpAccess(FtpClient ftpClient) {
+        try {
+            ftpClient.checkConnection();
+        } catch (IOException e) {
+            throw new RuntimeException("No connection to the FTP server!\n" + e);
+        }
     }
 }
