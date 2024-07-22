@@ -1,5 +1,6 @@
 package org.ase.config;
 
+import org.ase.fileAccess.FileAccessor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,16 +12,21 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HandyPicStarterTest {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
+    @Mock
+    private FileAccessor fileAccessor;
     @Mock
     private BufferedReader reader;
 
@@ -35,34 +41,26 @@ class HandyPicStarterTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void shouldCreateFolder_whenNotExists() {
-        HandyPicStarter testee = new HandyPicStarter(reader);
+        HandyPicStarter testee = new HandyPicStarter(fileAccessor, reader);
         Path folderPath = Path.of("unittest");
 
         testee.prepareFolderPath(folderPath);
 
-        boolean exists = Files.exists(folderPath);
-        assertThat(exists).isTrue();
-        boolean deleted = folderPath.toFile().delete();
+        verify(fileAccessor).createDirectoryIfNotExists(folderPath);
         assertThat(outContent.toString()).isEmpty();
     }
 
     @Test
-    @SuppressWarnings("unused")
     void shouldDrawWarning_whenFolderNotEmpty() throws IOException {
-        HandyPicStarter testee = new HandyPicStarter(reader);
+        when(fileAccessor.filesInDirectory(any())).thenReturn(singletonList(Path.of("image.jpg")));
+        when(reader.readLine()).thenReturn(" ");
+        HandyPicStarter testee = new HandyPicStarter(fileAccessor, reader);
         Path folderPath = Path.of("unittest");
-        Files.createDirectory(folderPath);
-        Path notEmptyPath = Path.of("unittest/notEmpty");
-        Files.createFile(notEmptyPath);
 
         testee.prepareFolderPath(folderPath);
 
-        boolean exists = Files.exists(folderPath);
-        assertThat(exists).isTrue();
+        verify(fileAccessor).createDirectoryIfNotExists(folderPath);
         assertThat(outContent.toString()).isNotEmpty();
-        boolean emptyFileDeleted = notEmptyPath.toFile().delete();
-        boolean deleted = folderPath.toFile().delete();
     }
 }

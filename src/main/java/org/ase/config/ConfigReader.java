@@ -4,16 +4,17 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
+import org.ase.fileAccess.FileAccessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 public class ConfigReader {
 
+    private final FileAccessor fileAccessor;
     private final Path workingPath;
     private final BufferedReader reader;
 
@@ -34,8 +35,7 @@ public class ConfigReader {
     }
 
     private void validateWorkingPath() {
-        boolean exists = Files.exists(workingPath);
-        if (!exists) {
+        if (!fileAccessor.fileExists(workingPath)) {
             throw new RuntimeException("Destination path does not exist");
         }
     }

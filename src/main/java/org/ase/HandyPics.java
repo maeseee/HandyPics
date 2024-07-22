@@ -62,10 +62,9 @@ public class HandyPics {
         lastBackup.storeNowFile(nowFile);
     }
 
-    static HandyPics getHandyPics(BufferedReader bufferedReader, Config config) {
+    static HandyPics createHandyPics(FileAccessor fileAccessor, BufferedReader bufferedReader, Config config) {
         FtpClient ftpClient = new ApacheFtpClient(config.ipAddress());
         validateFtpAccess(ftpClient);
-        FileAccessor fileAccessor = new FileAccessor();
         TransferFile transferFile = new TransferFile(ftpClient, fileAccessor, new Retry(bufferedReader));
         TransferFolder transferFolder = new TransferFolder(transferFile, new Retry(bufferedReader));
         Transfer transfer = new Transfer(transferFolder, fileAccessor, config.destinationRootFolder(), new ImageModifier());

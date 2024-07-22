@@ -35,7 +35,7 @@ public class FileAccessor {
     public void createDirectoryIfNotExists(Path directory) {
         if (!Files.exists(directory)) {
             try {
-                Files.createDirectory(directory);
+                Files.createDirectories(directory);
             } catch (IOException e) {
                 System.err.println(directory + " could not be created!\n" + e.getMessage());
                 throw new RuntimeException(e);

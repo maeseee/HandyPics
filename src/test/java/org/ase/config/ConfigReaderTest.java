@@ -1,5 +1,6 @@
 package org.ase.config;
 
+import org.ase.fileAccess.FileAccessor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,22 +14,26 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigReaderTest {
 
     @Mock
+    private FileAccessor fileAccessor;
+    @Mock
     private BufferedReader reader;
 
     @Test
     void shouldReadConfig_whenCorrect() throws IOException {
+        when(fileAccessor.fileExists(any())).thenReturn(true);
         String ipAddress = "192.168.50.50";
         String folderName = "test";
         when(reader.readLine())
                 .thenReturn(ipAddress)
                 .thenReturn(folderName);
-        ConfigReader testee = new ConfigReader(Path.of("src"), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("src"), reader);
 
         Config config = testee.readConfig();
 
@@ -38,6 +43,7 @@ class ConfigReaderTest {
 
     @Test
     void shouldRetryReadConfig_whenInputInvalid() throws IOException {
+        when(fileAccessor.fileExists(any())).thenReturn(true);
         String ipAddressInvalid = "192.168.50.500";
         String ipAddress = "192.168.50.50";
         String folderNameInvalid = "5test";
@@ -47,7 +53,7 @@ class ConfigReaderTest {
                 .thenReturn(ipAddress)
                 .thenReturn(folderNameInvalid)
                 .thenReturn(folderName);
-        ConfigReader testee = new ConfigReader(Path.of("src"), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("src"), reader);
 
         Config config = testee.readConfig();
 
@@ -57,7 +63,7 @@ class ConfigReaderTest {
 
     @Test
     void shouldThrow_whenWorkingPathNotExists() {
-        ConfigReader testee = new ConfigReader(Path.of("invalid"), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("invalid"), reader);
 
         assertThrows(RuntimeException.class, testee::readConfig);
     }
@@ -70,7 +76,7 @@ class ConfigReaderTest {
             "::1"
     })
     void shouldBeValidIpAddress(String ipAddress) {
-        ConfigReader testee = new ConfigReader(Path.of("."), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("."), reader);
 
         boolean validIpAddress = testee.isValidIpAddress(ipAddress);
 
@@ -86,7 +92,7 @@ class ConfigReaderTest {
             "192.168..5"
     })
     void shouldNotBeValide_whenIpAddressInvalid(String ipAddress) {
-        ConfigReader testee = new ConfigReader(Path.of("."), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("."), reader);
 
         boolean validIpAddress = testee.isValidIpAddress(ipAddress);
 
@@ -100,7 +106,7 @@ class ConfigReaderTest {
             "EFGH"
     })
     void shouldBeValidFolderName(String folderName) {
-        ConfigReader testee = new ConfigReader(Path.of("."), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("."), reader);
 
         boolean validFolderName = testee.isValidFolderName(folderName);
 
@@ -114,7 +120,7 @@ class ConfigReaderTest {
             "z?"
     })
     void shouldNotBeValide_whenFolderNameInvalid(String folderName) {
-        ConfigReader testee = new ConfigReader(Path.of("."), reader);
+        ConfigReader testee = new ConfigReader(fileAccessor, Path.of("."), reader);
 
         boolean validFolderName = testee.isValidFolderName(folderName);
 
