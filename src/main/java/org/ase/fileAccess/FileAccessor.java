@@ -47,6 +47,7 @@ public class FileAccessor {
         if (Files.exists(destinationFile)) {
             return;
         }
+        createDirectoryIfNotExists(destinationFile.getParent());
         try {
             Files.move(inputFile, destinationFile);
         } catch (IOException e) {
@@ -72,6 +73,7 @@ public class FileAccessor {
     }
 
     public void writeFile(Path file, String content) {
+        createDirectoryIfNotExists(file.getParent());
         try (FileWriter fileWriter = new FileWriter(file.toFile(), true)) {
             fileWriter.write(content);
         } catch (IOException e) {
