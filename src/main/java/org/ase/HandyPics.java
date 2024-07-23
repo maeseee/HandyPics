@@ -1,6 +1,7 @@
 package org.ase;
 
 import com.google.common.collect.ImmutableList;
+import lombok.AllArgsConstructor;
 import org.ase.config.Config;
 import org.ase.fileAccess.FileAccessor;
 import org.ase.ftp.ApacheFtpClient;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@AllArgsConstructor
 public class HandyPics {
 
     private final List<BackupFolder> FAVORIT_BACKUP_FOLDERS = ImmutableList.of(
@@ -34,11 +36,6 @@ public class HandyPics {
 
     private final Transfer transfer;
     private final LastBackup lastBackup;
-
-    public HandyPics(Transfer transfer, LastBackup lastBackup) {
-        this.transfer = transfer;
-        this.lastBackup = lastBackup;
-    }
 
     public void transferImagesFromHandy() {
         LocalDateTime lastBackupTime = loadLastBackupTime();
