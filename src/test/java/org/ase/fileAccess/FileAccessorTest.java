@@ -1,5 +1,7 @@
 package org.ase.fileAccess;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -9,14 +11,21 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class FileAccessorTest {
 
+    private final String fileName = "file.txt";
+    private final Path path = Path.of("test");
+    private final Path movedPath = Path.of("movedTest");
+    private final Path file = path.resolve(fileName);
+    private final FileAccessor testee = new FileAccessor();
+
+    @BeforeEach
+    @AfterEach
+    void deleteFiles() {
+        testee.deleteDirectory(path);
+        testee.deleteDirectory(movedPath);
+    }
+
     @Test
     void shouldCreateDirectory_whenNotExistsJet() {
-        String fileName = "file.txt";
-        Path path = Path.of("test");
-        Path file = path.resolve(fileName);
-        FileAccessor testee = new FileAccessor();
-        testee.deleteDirectory(path);
-
         testee.createDirectoryIfNotExists(path);
 
         assertThat(testee.fileExists(path)).isTrue();
@@ -25,11 +34,6 @@ class FileAccessorTest {
 
     @Test
     void shouldWriteFile() {
-        String fileName = "file.txt";
-        Path path = Path.of("test");
-        Path file = path.resolve(fileName);
-        FileAccessor testee = new FileAccessor();
-        testee.deleteDirectory(path);
         testee.createDirectoryIfNotExists(path);
 
         testee.writeFile(file, "MyText");
@@ -44,14 +48,7 @@ class FileAccessorTest {
 
     @Test
     void shouldMoveFile() {
-        String fileName = "file.txt";
-        Path path = Path.of("test");
-        Path movedPath = Path.of("movedTest");
-        Path file = path.resolve(fileName);
         Path movedFile = movedPath.resolve(fileName);
-        FileAccessor testee = new FileAccessor();
-        testee.deleteDirectory(path);
-        testee.deleteDirectory(movedPath);
         testee.writeFile(file, "MyText");
 
         testee.moveFileIfNotExists(file, movedFile);
