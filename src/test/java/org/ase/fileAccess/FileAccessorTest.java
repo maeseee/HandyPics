@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -44,6 +45,16 @@ class FileAccessorTest {
         assertThat(files.size()).isEqualTo(1);
         assertThat(files.get(0)).isEqualTo(file);
         assertThat(firstLine).isEqualTo("MyText");
+    }
+
+    @Test
+    void shouldNumberOfLines() throws IOException {
+        testee.createDirectoryIfNotExists(path);
+
+        testee.writeFile(file, "MyText\nLine2\nLine3");
+        long numberOfLines = testee.numberOfLines(file);
+
+        assertThat(numberOfLines).isEqualTo(3);
     }
 
     @Test

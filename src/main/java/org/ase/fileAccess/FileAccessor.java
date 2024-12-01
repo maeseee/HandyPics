@@ -56,6 +56,11 @@ public class FileAccessor {
         }
     }
 
+    public long numberOfLines(Path inputFile) throws IOException {
+        Stream<String> lines = Files.lines(inputFile);
+        return lines.count();
+    }
+
     public boolean fileExists(Path file) {
         return Files.exists(file);
     }
