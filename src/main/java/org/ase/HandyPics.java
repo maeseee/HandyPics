@@ -1,6 +1,5 @@
 package org.ase;
 
-import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import org.ase.config.Config;
 import org.ase.fileAccess.FileAccessor;
@@ -20,17 +19,14 @@ import java.util.List;
 @AllArgsConstructor
 public class HandyPics {
 
-    private final List<BackupFolder> FAVORIT_BACKUP_FOLDERS = ImmutableList.of(
+    private static final List<BackupFolder> FAVORIT_BACKUP_FOLDERS = List.of(
             new BackupFolder(Path.of("DCIM/MyAlbums/Best"), "Camera"), // Favourites on Oppo
-            new BackupFolder(Path.of("MIUI/Gallery/cloud/owner/best"), "Camera"), // Favourites old on Xiaomi
-            new BackupFolder(Path.of("Pictures/Gallery/owner/best"), "Camera"), // Favourites on Xiaomi
-            new BackupFolder(Path.of("MIUI/Gallery/cloud/owner"), "Camera") // Albums on Xiaomi
+            new BackupFolder(Path.of("Pictures/best"), "Camera") // Favourites on Pixel
     );
-    private final List<BackupFolder> BACKUP_FOLDERS = ImmutableList.of(
+    private static final List<BackupFolder> BACKUP_FOLDERS = List.of(
             new BackupFolder(Path.of("DCIM"), "Camera"),
             new BackupFolder(Path.of("Pictures"), "Signal"), // Signal on Oppo
             new BackupFolder(Path.of("Download/Bluetooth"), "Bluetooth"), // Bluetooth on Oppo
-            new BackupFolder(Path.of("MIUI/ShareMe"), "Bluetooth"), // Bluetooth on Xiaomi
             new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp")
     );
 
