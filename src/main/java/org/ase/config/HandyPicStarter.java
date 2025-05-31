@@ -10,7 +10,7 @@ import java.nio.file.Path;
 
 @RequiredArgsConstructor
 public class HandyPicStarter {
-    private static final Path DESTINATION_ROOT = Path.of("C:/Users/maese/Bilder/FromHandy");
+    private static final Path DESTINATION_ROOT = Path.of("C:/Users/maese/SynologyDrive/Pictures/FromHandy");
 
     private final FileAccessor fileAccessor;
     private final BufferedReader reader;

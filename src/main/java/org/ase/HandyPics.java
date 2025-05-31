@@ -20,12 +20,10 @@ import java.util.List;
 public class HandyPics {
 
     private static final List<BackupFolder> FAVORIT_BACKUP_FOLDERS = List.of(
-            new BackupFolder(Path.of("DCIM/MyAlbums/Best"), "Camera"), // Favourites on Oppo
             new BackupFolder(Path.of("Pictures/best"), "Camera") // Favourites on Pixel
     );
     private static final List<BackupFolder> BACKUP_FOLDERS = List.of(
             new BackupFolder(Path.of("DCIM"), "Camera"),
-            new BackupFolder(Path.of("Pictures"), "Signal"), // Signal on Oppo
             new BackupFolder(Path.of("Download/Bluetooth"), "Bluetooth"), // Bluetooth on Oppo
             new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp")
     );
