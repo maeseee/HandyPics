@@ -19,12 +19,14 @@ import java.util.List;
 @AllArgsConstructor
 public class HandyPics {
 
-    private static final List<BackupFolder> FAVORIT_BACKUP_FOLDERS = List.of(
-            new BackupFolder(Path.of("Pictures/best"), "Camera") // Favourites on Pixel
+    private static final List<BackupFolder> FAVORITE_BACKUP_FOLDERS = List.of(
+            new BackupFolder(Path.of("Pictures/best"), "Camera"), // Pixel Ramona
+            new BackupFolder(Path.of("DCIM/best"), "Camera") // Pixel Marcel
     );
     private static final List<BackupFolder> BACKUP_FOLDERS = List.of(
             new BackupFolder(Path.of("DCIM"), "Camera"),
             new BackupFolder(Path.of("Download/Bluetooth"), "Bluetooth"), // Bluetooth on Oppo
+            new BackupFolder(Path.of("Download/Quick Share"), "Quick Share"), // Bluetooth on Oppo
             new BackupFolder(Path.of("Android/media/com.whatsapp/WhatsApp/Media"), "Whatsapp")
     );
 
@@ -34,7 +36,7 @@ public class HandyPics {
     public void transferImagesFromHandy() {
         LocalDateTime lastBackupTime = loadLastBackupTime();
 
-        transfer.backupPicturesInFolders(FAVORIT_BACKUP_FOLDERS, lastBackupTime, true);
+        transfer.backupPicturesInFolders(FAVORITE_BACKUP_FOLDERS, lastBackupTime, true);
         transfer.backupPicturesInFolders(BACKUP_FOLDERS, lastBackupTime, false);
 
         updateLastBackupTime();
